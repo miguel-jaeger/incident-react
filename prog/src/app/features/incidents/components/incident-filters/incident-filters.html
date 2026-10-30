@@ -1,0 +1,103 @@
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md">
+  <!-- Search Input & Filters -->
+  <div class="flex-1 flex flex-col sm:flex-row items-center gap-space-sm">
+    <!-- Search Input -->
+    <div class="relative w-full sm:max-w-md">
+      <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-lg">search</span>
+      <input
+        class="w-full pl-10 pr-10 py-2 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 shadow-inner"
+        aria-label="Buscar incidentes"
+        [value]="searchQuery"
+        (ngModelChange)="searchChange.emit($event)"
+        [ngModel]="searchQuery"
+        placeholder="Buscar por ID, título, aula o motivo..."
+        type="text"
+      />
+      <button
+        *ngIf="searchQuery.length > 0"
+        class="absolute right-3 top-2.5 text-on-surface-variant hover:text-on-surface"
+        (click)="searchChange.emit('')"
+        aria-label="Limpiar búsqueda"
+        type="button"
+      >
+        <span class="material-symbols-outlined text-base">close</span>
+      </button>
+    </div>
+
+    <!-- Filter: Status -->
+    <div class="w-full sm:w-auto flex items-center bg-surface-container-low rounded-lg p-1">
+      <button
+        class="px-3 py-1.5 rounded-md font-label-sm text-label-sm transition"
+        [ngClass]="statusFilter === 'ALL' ? 'font-semibold bg-surface-container-lowest text-on-surface shadow-sm' : 'font-medium text-on-surface-variant hover:text-on-surface'"
+        (click)="statusChange.emit('ALL')"
+        type="button"
+      >
+        Todos
+      </button>
+      <button
+        class="px-3 py-1.5 rounded-md font-label-sm text-label-sm transition"
+        [ngClass]="statusFilter === 'Active' ? 'font-semibold bg-surface-container-lowest text-on-surface shadow-sm' : 'font-medium text-on-surface-variant hover:text-on-surface'"
+        (click)="statusChange.emit('Active')"
+        type="button"
+      >
+        Activos
+      </button>
+      <button
+        class="px-3 py-1.5 rounded-md font-label-sm text-label-sm transition"
+        [ngClass]="statusFilter === 'Inactive' ? 'font-semibold bg-surface-container-lowest text-on-surface shadow-sm' : 'font-medium text-on-surface-variant hover:text-on-surface'"
+        (click)="statusChange.emit('Inactive')"
+        type="button"
+      >
+        Inactivos
+      </button>
+    </div>
+
+    <!-- Filter: Priority -->
+    <select
+      class="w-full sm:w-auto bg-surface-container-low text-body-sm font-body-sm text-on-surface px-3 py-2 rounded-lg focus:outline-none cursor-pointer"
+      [ngModel]="priorityFilter"
+      (ngModelChange)="priorityChange.emit($event)"
+      aria-label="Filtrar por prioridad"
+    >
+      <option value="ALL">Todas las prioridades</option>
+      <option value="High">Prioridad Alta (High)</option>
+      <option value="Medium">Prioridad Media (Medium)</option>
+      <option value="Low">Prioridad Baja (Low)</option>
+    </select>
+  </div>
+
+  <!-- Primary Action Buttons -->
+  <div class="flex items-center gap-space-sm justify-end">
+    <div class="flex items-center bg-surface-container-low rounded-lg p-1">
+      <button
+        class="p-1.5 rounded-md transition"
+        [ngClass]="currentView === 'cards' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'"
+        (click)="viewChange.emit('cards')"
+        title="Vista Tarjetas"
+        aria-label="Vista tarjetas"
+        type="button"
+      >
+        <span class="material-symbols-outlined text-base">grid_view</span>
+      </button>
+      <button
+        class="p-1.5 rounded-md transition"
+        [ngClass]="currentView === 'table' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'"
+        (click)="viewChange.emit('table')"
+        title="Vista Tabla Rápida"
+        aria-label="Vista tabla"
+        type="button"
+      >
+        <span class="material-symbols-outlined text-base">format_list_bulleted</span>
+      </button>
+    </div>
+
+    <button
+      class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-container hover:bg-primary hover:shadow-lg active:scale-95 text-on-primary font-label-lg text-label-lg transition shadow-md shadow-primary-container/20"
+      (click)="createClick.emit()"
+      type="button"
+    >
+      <span class="material-symbols-outlined text-lg">add_circle</span>
+      <span>Nuevo Incidente</span>
+    </button>
+  </div>
+</div>

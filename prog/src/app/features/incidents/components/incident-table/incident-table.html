@@ -1,0 +1,47 @@
+<div class="rounded-xl bg-surface-container-lowest shadow-sm overflow-x-auto">
+  <table class="w-full text-left">
+    <thead class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+      <tr>
+        <th class="py-3 px-4">Ticket</th>
+        <th class="py-3 px-4">Título &amp; Ubicación</th>
+        <th class="py-3 px-4">Estado</th>
+        <th class="py-3 px-4">Prioridad</th>
+        <th class="py-3 px-4">Motivo Rechazo / Solución</th>
+        <th class="py-3 px-4">Creado</th>
+        <th class="py-3 px-4 text-right">Acciones Endpoint</th>
+      </tr>
+    </thead>
+    <tbody class="font-body-sm text-body-sm text-on-surface">
+      <tr *ngFor="let item of incidents" class="border-b border-surface-container hover:bg-surface-container-low transition">
+        <td class="py-3 px-4 font-mono font-semibold text-primary">{{ item | appTicketCode }}</td>
+        <td class="py-3 px-4">
+          <div class="font-semibold text-on-surface hover:text-primary transition cursor-pointer" (click)="viewDetail.emit(item)">
+            {{ item.title }}
+          </div>
+          <div class="text-on-surface-variant text-label-sm">{{ item.location || 'Campus UTP' }}</div>
+        </td>
+        <td class="py-3 px-4">
+          <app-status-badge [status]="item.status"></app-status-badge>
+        </td>
+        <td class="py-3 px-4">
+          <app-priority-badge [priority]="item.priority"></app-priority-badge>
+        </td>
+        <td class="py-3 px-4 text-on-surface-variant max-w-xs truncate">{{ item.message || '—' }}</td>
+        <td class="py-3 px-4 font-mono text-label-sm text-outline">{{ item.createdAt | appDate }}</td>
+        <td class="py-3 px-4 text-right">
+          <div class="inline-flex items-center gap-1">
+            <button (click)="viewDetail.emit(item)" class="p-1 rounded text-tertiary hover:bg-tertiary/10" title="Ver Detalle (GET)" type="button">
+              <span class="material-symbols-outlined text-base">visibility</span>
+            </button>
+            <button (click)="editStatus.emit(item)" class="p-1 rounded text-amber-600 hover:bg-amber-500/10" title="Editar Estado (PATCH)" type="button">
+              <span class="material-symbols-outlined text-base">edit</span>
+            </button>
+            <button (click)="delete.emit(item)" class="p-1 rounded text-primary hover:bg-primary-container/10" title="Eliminar (DELETE)" type="button">
+              <span class="material-symbols-outlined text-base">delete</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

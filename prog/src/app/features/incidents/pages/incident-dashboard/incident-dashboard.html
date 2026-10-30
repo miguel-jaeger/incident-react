@@ -1,0 +1,125 @@
+<!-- Breadcrumb & API Status -->
+<section class="w-full px-space-lg pt-space-md pb-space-lg">
+  <div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md">
+    <div class="flex items-center gap-space-sm text-body-sm font-body-sm text-on-surface-variant">
+      <span class="flex items-center gap-1 font-semibold text-primary">
+        <span class="material-symbols-outlined text-base">terminal</span>
+        incident-controller
+      </span>
+      <span>/</span>
+      <span class="text-on-surface font-medium">Mesa Operativa Campus</span>
+      <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-label-sm font-label-sm text-on-surface">api-incident.onrender.com</span>
+    </div>
+    <div class="flex items-center gap-space-sm">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-label-sm text-label-sm">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+        <span>HTTP 200 OK • Swagger OAS 3.0</span>
+      </div>
+      <button
+        class="flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-primary shadow-sm hover:shadow transition text-label-sm font-label-sm"
+        id="btnOpenDocs"
+        (click)="isDocsModalOpen = true"
+        type="button"
+      >
+        <span class="material-symbols-outlined text-sm">code</span>
+        <span>Schemas &amp; Docs</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Metric Bento Grid -->
+  <app-kpi-deck [stats]="stats"></app-kpi-deck>
+</section>
+
+<!-- Interactive Control Deck & Filters -->
+<section class="w-full px-space-lg mb-space-md">
+  <app-incident-filters
+    [searchQuery]="searchQuery"
+    [statusFilter]="statusFilter"
+    [priorityFilter]="priorityFilter"
+    [currentView]="currentView"
+    (searchChange)="searchQuery = $event"
+    (statusChange)="onStatusFilter($event)"
+    (priorityChange)="priorityFilter = $event"
+    (viewChange)="currentView = $event"
+    (resetFilters)="resetAllFilters()"
+    (createClick)="openCreateModal()"
+  ></app-incident-filters>
+</section>
+
+<!-- Main Incident Workspace -->
+<section class="w-full px-space-lg pb-space-xl flex-grow">
+  <!-- Loading Indicator -->
+  <app-loading-spinner
+    *ngIf="isLoading && filteredIncidents.length === 0"
+    label="Cargando incidentes desde api-incident.onrender.com..."
+  ></app-loading-spinner>
+
+  <!-- Active Grid View -->
+  <div
+    *ngIf="!isLoading && filteredIncidents.length > 0 && currentView === 'cards'"
+    class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-space-md"
+    id="cardsContainer"
+  >
+    <app-incident-card
+      *ngFor="let item of filteredIncidents"
+      [incident]="item"
+      (viewDetail)="openDetailModal($event)"
+      (editStatus)="openStatusModal($event)"
+      (delete)="deleteIncident($event)"
+    ></app-incident-card>
+  </div>
+
+  <!-- Alternative Table View -->
+  <div *ngIf="!isLoading && filteredIncidents.length > 0 && currentView === 'table'" id="tableContainer">
+    <app-incident-table
+      [incidents]="filteredIncidents"
+      (viewDetail)="openDetailModal($event)"
+      (editStatus)="openStatusModal($event)"
+      (delete)="deleteIncident($event)"
+    ></app-incident-table>
+  </div>
+
+  <!-- Empty State Fallback -->
+  <app-empty-state
+    *ngIf="!isLoading && filteredIncidents.length === 0"
+    title="Sin incidentes encontrados"
+    description="No se hallaron registros que coincidan con los filtros aplicados o la búsqueda."
+  >
+    <button
+      empty-state-action
+      (click)="resetAllFilters()"
+      class="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md transition"
+      id="btnResetFilters"
+      type="button"
+    >
+      Restablecer Filtros
+    </button>
+  </app-empty-state>
+</section>
+
+<!-- Modal: Crear Nuevo Incidente (POST) -->
+<app-create-incident-modal
+  *ngIf="isCreateModalOpen"
+  (closed)="isCreateModalOpen = false"
+  (saved)="submitCreateIncident($event)"
+></app-create-incident-modal>
+
+<!-- Modal: Editar Estado (PATCH) -->
+<app-status-modal
+  *ngIf="isStatusModalOpen && selectedIncident"
+  [incident]="selectedIncident"
+  (closed)="isStatusModalOpen = false"
+  (saved)="submitStatusUpdate($event)"
+></app-status-modal>
+
+<!-- Modal: Detalle Extendido (GET /:id) -->
+<app-incident-detail-modal
+  *ngIf="isDetailModalOpen"
+  [incident]="detailedIncident"
+  [isLoading]="isLoadingDetail"
+  (closed)="closeDetailModal()"
+></app-incident-detail-modal>
+
+<!-- Modal: Swagger Docs -->
+<app-api-docs-modal *ngIf="isDocsModalOpen" (closed)="isDocsModalOpen = false"></app-api-docs-modal>

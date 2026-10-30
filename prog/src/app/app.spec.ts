@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { provideHttpClient } from '@angular/common/http';
 import { App } from './app';
+import { Toast } from './shared/components/toast/toast';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        RouterModule.forRoot([])
-      ],
-      declarations: [
-        App
-      ],
+      imports: [RouterModule.forRoot([]), CommonModule],
+      declarations: [App, Toast],
+      providers: [provideHttpClient()]
     }).compileComponents();
   });
 
@@ -20,10 +20,10 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render brand title', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, prog');
+    expect(compiled.textContent).toContain('UTP Incidentes TI');
   });
 });

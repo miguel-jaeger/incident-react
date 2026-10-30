@@ -1,0 +1,1475 @@
+<!DOCTYPE html><html lang="es" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><title>UTP Soporte TI</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Montserrat:wght@100..900&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-primary-container":"#ffdad8","on-error-container":"#93000a","on-tertiary":"#ffffff","on-background":"#111c2d","surface-tint":"#bf0229","tertiary-fixed":"#cce5ff","on-primary-fixed":"#410007","inverse-primary":"#ffb3b1","primary-fixed":"#ffdad8","on-tertiary-container":"#cce5ff","surface-bright":"#f9f9ff","surface-container-lowest":"#ffffff","error":"#ba1a1a","outline-variant":"#e5bdbb","tertiary-container":"#006aa1","on-tertiary-fixed-variant":"#004b73","on-secondary-fixed":"#40000d","on-tertiary-fixed":"#001d31","surface-container":"#e7eeff","primary-container":"#c8102e","secondary-fixed-dim":"#ffb2b7","on-surface-variant":"#5c403f","surface-container-high":"#dee8ff","background":"#f9f9ff","outline":"#906f6e","inverse-surface":"#263143","secondary":"#ba0037","on-primary":"#ffffff","tertiary":"#00517d","error-container":"#ffdad6","surface":"#f9f9ff","surface-container-low":"#f0f3ff","on-secondary-container":"#fffbff","surface-container-highest":"#d8e3fb","on-error":"#ffffff","on-surface":"#111c2d","surface-dim":"#cfdaf2","primary":"#9e001f","secondary-fixed":"#ffdadb","primary-fixed-dim":"#ffb3b1","on-secondary":"#ffffff","inverse-on-surface":"#ecf1ff","secondary-container":"#e70648","on-primary-fixed-variant":"#92001c","on-secondary-fixed-variant":"#920029","surface-variant":"#d8e3fb","tertiary-fixed-dim":"#93ccff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-lg":"1.5rem","space-md":"1rem","space-xs":"0.25rem","gutter":"1rem","space-sm":"0.5rem","space-xl":"2rem","margin":"1.5rem"},"fontFamily":{"headline-sm":["Montserrat"],"body-sm":["Inter"],"label-md":["Inter"],"body-md":["Inter"],"headline-md":["Montserrat"],"body-lg":["Inter"],"label-sm":["Inter"],"display":["Montserrat"],"label-lg":["Inter"],"headline-lg":["Montserrat"]},"fontSize":{"headline-sm":["16px",{"lineHeight":"24px","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"500"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"headline-md":["20px",{"lineHeight":"28px","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","fontWeight":"600"}],"display":["32px",{"lineHeight":"40px","fontWeight":"700"}],"label-lg":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-lg":["24px",{"lineHeight":"32px","fontWeight":"600"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm"><img alt="Universidad Tecnológica del Perú" class="h-9 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/5/50/Utplogonuevo.svg?utm_source=es.wikipedia.org&amp;utm_campaign=index&amp;utm_content=original"><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">UTP Incidentes TI</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-none">Gestión Campus &amp; Infraestructura</span></div></div></div><nav class="hidden lg:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-label-lg rounded-lg"></nav><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1.5 rounded-lg"></div><button aria-label="Notificaciones urgentes" class="relative p-2 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-xl">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="hidden sm:flex flex-col text-right"><span class="font-label-sm text-label-sm text-on-surface font-semibold">Admin TI UTP</span><span class="font-label-sm text-label-sm text-outline leading-none">Supervisión NOC</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7ri6QyBan5kvQoXffWSwQbWtpq11tvmL9zWOKsEQkkfkdPZwxVVTM4IzPpVO8K6BpVfiFy7U92VnmAFgdYzOIPGKO_0jbBBKQspQ2IG4TWidKi5N6JUAS-Uv7IY-M7_zGJk_FOkUQjC25vMRGtIRjcf31iInSNvU1RvJ5iBOI2M-59PvhTw26CeFGKhqXV438jppB75DcIFm781rkXvks3SERqXE1XaXHDh5ekp4"></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Command & KPI Deck -->
+<section class="w-full px-space-lg pt-space-md pb-space-lg">
+<!-- Breadcrumb & Backend Status -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md">
+<div class="flex items-center gap-space-sm text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 font-semibold text-primary">
+<span class="material-symbols-outlined text-base">terminal</span>
+          incident-controller
+        </span>
+<span class="">/</span>
+<span class="text-on-surface font-medium">Mesa Operativa Campus</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-label-sm font-label-sm text-on-surface">
+          api-incident.onrender.com
+        </span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+<span class="">HTTP 200 OK • Swagger OAS 3.0</span>
+</div>
+<button class="flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-primary shadow-sm hover:shadow transition text-label-sm font-label-sm" id="btnOpenDocs">
+<span class="material-symbols-outlined text-sm">code</span>
+<span class="">Schemas &amp; Docs</span>
+</button>
+</div>
+</div>
+<!-- Metric Bento Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md">
+<!-- Total Tickets -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Incidentes</span>
+<span class="p-1.5 rounded-lg bg-surface-container text-tertiary material-symbols-outlined text-base">dataset</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display text-display text-on-surface font-bold" id="statTotal">6</span>
+<span class="font-label-sm text-label-sm text-emerald-600 font-medium">GET /api/incidents</span>
+</div>
+<div class="mt-2 text-body-sm font-body-sm text-on-surface-variant flex items-center justify-between">
+<span class="">Sincronizados en memoria</span>
+<span class="font-semibold text-on-surface">100%</span>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-tertiary to-tertiary-container"></div>
+</div>
+<!-- Active / Attention -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Activos / En Atención</span>
+<span class="p-1.5 rounded-lg bg-emerald-100 text-emerald-700 material-symbols-outlined text-base">radio_button_checked</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display text-display text-on-surface font-bold" id="statActive">4</span>
+<span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-label-sm text-label-sm">Active</span>
+</div>
+<div class="mt-2 text-body-sm font-body-sm text-on-surface-variant flex items-center justify-between">
+<span class="">Requieren acción técnica</span>
+<span class="font-semibold text-emerald-700">75%</span>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500"></div>
+</div>
+<!-- Inactive / Closed -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Inactivos / Resueltos</span>
+<span class="p-1.5 rounded-lg bg-surface-container text-outline material-symbols-outlined text-base">task_alt</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display text-display text-on-surface font-bold" id="statInactive">2</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Inactive</span>
+</div>
+<div class="mt-2 text-body-sm font-body-sm text-on-surface-variant flex items-center justify-between">
+<span class="">Tickets archivados</span>
+<span class="font-semibold text-on-surface">25%</span>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-1 bg-outline"></div>
+</div>
+<!-- Critical / High Priority -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Prioridad Alta (High)</span>
+<span class="p-1.5 rounded-lg bg-red-100 text-primary-container material-symbols-outlined text-base">warning</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display text-display text-primary font-bold" id="statHigh">5</span>
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-label-sm text-label-sm">Críticos</span>
+</div>
+<div class="mt-2 text-body-sm font-body-sm text-on-surface-variant flex items-center justify-between">
+<span class="">SLA Campus &lt; 2h</span>
+<span class="font-semibold text-primary">Atención UTP</span>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-1 bg-primary-container"></div>
+</div>
+<!-- Campus SLA Performance -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Tiempo Promedio UTP</span>
+<span class="p-1.5 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant material-symbols-outlined text-base">timer</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display text-display text-on-surface font-bold">1.4<span class="text-headline-md font-headline-md font-normal">h</span></span>
+<span class="font-label-sm text-label-sm text-emerald-600 font-medium">-22% vs meta</span>
+</div>
+<div class="mt-2 text-body-sm font-body-sm text-on-surface-variant flex items-center justify-between">
+<span class="">Resolución de incidentes</span>
+<span class="font-semibold text-tertiary">Óptimo</span>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-1 bg-tertiary"></div>
+</div>
+</div>
+</section>
+<!-- Interactive Control Deck & Filters -->
+<section class="w-full px-space-lg mb-space-md">
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md">
+<!-- Search Input -->
+<div class="flex-1 flex flex-col sm:flex-row items-center gap-space-sm">
+<div class="relative w-full sm:max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-lg">search</span>
+<input class="w-full pl-10 pr-10 py-2 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 shadow-inner" id="searchInput" placeholder="Buscar por ID, título, aula o motivo..." type="text">
+<button class="hidden absolute right-3 top-2.5 text-on-surface-variant hover:text-on-surface" id="btnClearSearch">
+<span class="material-symbols-outlined text-base">close</span>
+</button>
+</div>
+<!-- Filter: Status -->
+<div class="w-full sm:w-auto flex items-center bg-surface-container-low rounded-lg p-1">
+<button class="filter-status-btn px-3 py-1.5 rounded-md font-label-sm text-label-sm font-semibold bg-surface-container-lowest text-on-surface shadow-sm transition" data-filter-status="ALL">Todos</button>
+<button class="filter-status-btn px-3 py-1.5 rounded-md font-label-sm text-label-sm font-medium text-on-surface-variant hover:text-on-surface transition" data-filter-status="Active">Activos</button>
+<button class="filter-status-btn px-3 py-1.5 rounded-md font-label-sm text-label-sm font-medium text-on-surface-variant hover:text-on-surface transition" data-filter-status="Inactive">Inactivos</button>
+</div>
+<!-- Filter: Priority -->
+<select class="w-full sm:w-auto bg-surface-container-low text-body-sm font-body-sm text-on-surface px-3 py-2 rounded-lg focus:outline-none cursor-pointer" id="priorityFilter">
+<option value="ALL">Todas las prioridades</option>
+<option value="High">Prioridad Alta (High)</option>
+<option value="Medium">Prioridad Media (Medium)</option>
+<option value="Low">Prioridad Baja (Low)</option>
+</select>
+</div>
+<!-- Primary Action Buttons -->
+<div class="flex items-center gap-space-sm justify-end">
+
+<div class="flex items-center bg-surface-container-low rounded-lg p-1">
+<button class="view-toggle-btn p-1.5 rounded-md bg-surface-container-lowest text-primary shadow-sm" id="btnViewCards" title="Vista Tarjetas">
+<span class="material-symbols-outlined text-base">grid_view</span>
+</button>
+<button class="view-toggle-btn p-1.5 rounded-md text-on-surface-variant hover:text-on-surface" id="btnViewTable" title="Vista Tabla Rápida">
+<span class="material-symbols-outlined text-base">format_list_bulleted</span>
+</button>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg transition shadow-md shadow-primary-container/20" id="btnOpenCreate">
+<span class="material-symbols-outlined text-lg">add_circle</span>
+<span class="">Nuevo Incidente</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Live Feedback Notification Toast (Floating Top-Center) -->
+<div class="fixed top-20 right-6 z-50 transform transition-all duration-300 pointer-events-none flex items-center gap-3 px-4 py-3 rounded-xl bg-surface-container-lowest shadow-xl max-w-md translate-x-full opacity-0" id="liveToast">
+<div class="p-2 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center" id="toastIconBg">
+<span class="material-symbols-outlined text-xl" id="toastIcon">check_circle</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface" id="toastTitle">GET /api/incidents sincronizado</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant" id="toastMessage">24 registros validados contra api-incident.onrender.com</span>
+</div>
+</div>
+<!-- Main Incident Workspace -->
+<section class="w-full px-space-lg pb-space-xl">
+<!-- Active Grid View -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-space-md" id="cardsContainer">
+        <div class="relative flex flex-col justify-between rounded-xl bg-surface-container-lowest p-space-md shadow-sm hover:shadow-md transition">
+          <!-- Card Header -->
+          <div>
+            <div class="flex items-start justify-between gap-space-sm mb-1">
+              <div>
+                <span class="font-mono text-label-sm font-semibold text-primary">INC-1045</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold hover:text-primary transition cursor-pointer" onclick="handleViewDetail(1)">
+                  Ejemplo de título
+                </h3>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-semibold bg-surface-container text-on-surface-variant">
+             <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+             Inactive
+           </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-bold bg-primary-container text-on-primary">High</span>
+              </div>
+            </div>
+
+            <!-- Body Description -->
+            <div class="mt-2 text-body-md font-body-md text-on-surface">
+              <span class="font-semibold text-on-surface-variant">Descripción:</span> Descripción del ítem - Falla en proyector Epson Aula Magna Pabellón B
+            </div>
+
+            <!-- Rejection reason if present -->
+            <div class="mt-2.5 p-2 rounded-lg bg-surface-container-low text-body-sm font-body-sm flex items-start gap-1.5">
+             <span class="font-semibold text-on-surface-variant shrink-0">Razones del rechazo:</span>
+             <span class="text-on-surface break-words">pepitoooo</span>
+           </div>
+
+            <!-- Footnote timestamp -->
+            <div class="mt-3 flex items-center justify-between text-label-sm font-label-sm text-outline font-mono">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">schedule</span>
+                Created: 2025-10-31T14:24:58.847
+              </span>
+              <span class="text-on-surface-variant truncate max-w-[130px]" title="Lima Centro - Aula Magna">Lima Centro - Aula Magna</span>
+            </div>
+          </div>
+
+          <!-- Bottom Endpoint Action Bar -->
+          <div class="mt-space-md pt-space-sm border-t border-surface-container flex items-center justify-between gap-space-xs">
+            <button onclick="handleViewDetail(1)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 font-label-md text-label-md transition" title="GET /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">visibility</span>
+              <span class="">Detalle</span>
+            </button>
+
+            <button onclick="handleOpenPatch(1)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 font-label-md text-label-md transition" title="PATCH /api/incidents/{id}/status">
+              <span class="material-symbols-outlined text-base">edit</span>
+              <span class="">Editar Estado</span>
+            </button>
+
+            <button onclick="handleDelete(1)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary-container/10 font-label-md text-label-md transition" title="DELETE /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">delete</span>
+              <span class="">Eliminar</span>
+            </button>
+          </div>
+        </div>
+      
+        <div class="relative flex flex-col justify-between rounded-xl bg-surface-container-lowest p-space-md shadow-sm hover:shadow-md transition">
+          <!-- Card Header -->
+          <div>
+            <div class="flex items-start justify-between gap-space-sm mb-1">
+              <div>
+                <span class="font-mono text-label-sm font-semibold text-primary">INC-1044</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold hover:text-primary transition cursor-pointer" onclick="handleViewDetail(2)">
+                  Ejemplo de título 2
+                </h3>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-semibold bg-emerald-100 text-emerald-800">
+             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+             Active
+           </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-bold bg-primary-container text-on-primary">High</span>
+              </div>
+            </div>
+
+            <!-- Body Description -->
+            <div class="mt-2 text-body-md font-body-md text-on-surface">
+              <span class="font-semibold text-on-surface-variant">Descripción:</span> Descripción del ítem - Caída enlace Wi-Fi Eduroam en Laboratorio de Cómputo 3
+            </div>
+
+            <!-- Rejection reason if present -->
+            
+
+            <!-- Footnote timestamp -->
+            <div class="mt-3 flex items-center justify-between text-label-sm font-label-sm text-outline font-mono">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">schedule</span>
+                Created: 2025-10-31T14:25:04.414
+              </span>
+              <span class="text-on-surface-variant truncate max-w-[130px]" title="San Juan de Lurigancho - Pabellón A">San Juan de Lurigancho - Pabellón A</span>
+            </div>
+          </div>
+
+          <!-- Bottom Endpoint Action Bar -->
+          <div class="mt-space-md pt-space-sm border-t border-surface-container flex items-center justify-between gap-space-xs">
+            <button onclick="handleViewDetail(2)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 font-label-md text-label-md transition" title="GET /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">visibility</span>
+              <span class="">Detalle</span>
+            </button>
+
+            <button onclick="handleOpenPatch(2)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 font-label-md text-label-md transition" title="PATCH /api/incidents/{id}/status">
+              <span class="material-symbols-outlined text-base">edit</span>
+              <span class="">Editar Estado</span>
+            </button>
+
+            <button onclick="handleDelete(2)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary-container/10 font-label-md text-label-md transition" title="DELETE /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">delete</span>
+              <span class="">Eliminar</span>
+            </button>
+          </div>
+        </div>
+      
+        <div class="relative flex flex-col justify-between rounded-xl bg-surface-container-lowest p-space-md shadow-sm hover:shadow-md transition">
+          <!-- Card Header -->
+          <div>
+            <div class="flex items-start justify-between gap-space-sm mb-1">
+              <div>
+                <span class="font-mono text-label-sm font-semibold text-primary">INC-1043</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold hover:text-primary transition cursor-pointer" onclick="handleViewDetail(3)">
+                  Ejemplo de título 3
+                </h3>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-semibold bg-emerald-100 text-emerald-800">
+             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+             Active
+           </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-bold bg-primary-container text-on-primary">High</span>
+              </div>
+            </div>
+
+            <!-- Body Description -->
+            <div class="mt-2 text-body-md font-body-md text-on-surface">
+              <span class="font-semibold text-on-surface-variant">Descripción:</span> Descripción del ítem - Reinicio no programado Servidor Canvas / Portal del Estudiante
+            </div>
+
+            <!-- Rejection reason if present -->
+            
+
+            <!-- Footnote timestamp -->
+            <div class="mt-3 flex items-center justify-between text-label-sm font-label-sm text-outline font-mono">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">schedule</span>
+                Created: 2025-10-31T14:25:09.954
+              </span>
+              <span class="text-on-surface-variant truncate max-w-[130px]" title="Data Center Campus Central">Data Center Campus Central</span>
+            </div>
+          </div>
+
+          <!-- Bottom Endpoint Action Bar -->
+          <div class="mt-space-md pt-space-sm border-t border-surface-container flex items-center justify-between gap-space-xs">
+            <button onclick="handleViewDetail(3)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 font-label-md text-label-md transition" title="GET /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">visibility</span>
+              <span class="">Detalle</span>
+            </button>
+
+            <button onclick="handleOpenPatch(3)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 font-label-md text-label-md transition" title="PATCH /api/incidents/{id}/status">
+              <span class="material-symbols-outlined text-base">edit</span>
+              <span class="">Editar Estado</span>
+            </button>
+
+            <button onclick="handleDelete(3)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary-container/10 font-label-md text-label-md transition" title="DELETE /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">delete</span>
+              <span class="">Eliminar</span>
+            </button>
+          </div>
+        </div>
+      
+        <div class="relative flex flex-col justify-between rounded-xl bg-surface-container-lowest p-space-md shadow-sm hover:shadow-md transition">
+          <!-- Card Header -->
+          <div>
+            <div class="flex items-start justify-between gap-space-sm mb-1">
+              <div>
+                <span class="font-mono text-label-sm font-semibold text-primary">INC-1042</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold hover:text-primary transition cursor-pointer" onclick="handleViewDetail(4)">
+                  Ejemplo de título 4
+                </h3>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-semibold bg-emerald-100 text-emerald-800">
+             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+             Active
+           </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-bold bg-primary-container text-on-primary">High</span>
+              </div>
+            </div>
+
+            <!-- Body Description -->
+            <div class="mt-2 text-body-md font-body-md text-on-surface">
+              <span class="font-semibold text-on-surface-variant">Descripción:</span> Descripción del ítem - Cable de red UTP desprendido en Rack de Telecomunicaciones
+            </div>
+
+            <!-- Rejection reason if present -->
+            
+
+            <!-- Footnote timestamp -->
+            <div class="mt-3 flex items-center justify-between text-label-sm font-label-sm text-outline font-mono">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">schedule</span>
+                Created: 2025-10-31T14:25:15.170
+              </span>
+              <span class="text-on-surface-variant truncate max-w-[130px]" title="Lima Norte - Piso 3">Lima Norte - Piso 3</span>
+            </div>
+          </div>
+
+          <!-- Bottom Endpoint Action Bar -->
+          <div class="mt-space-md pt-space-sm border-t border-surface-container flex items-center justify-between gap-space-xs">
+            <button onclick="handleViewDetail(4)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 font-label-md text-label-md transition" title="GET /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">visibility</span>
+              <span class="">Detalle</span>
+            </button>
+
+            <button onclick="handleOpenPatch(4)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 font-label-md text-label-md transition" title="PATCH /api/incidents/{id}/status">
+              <span class="material-symbols-outlined text-base">edit</span>
+              <span class="">Editar Estado</span>
+            </button>
+
+            <button onclick="handleDelete(4)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary-container/10 font-label-md text-label-md transition" title="DELETE /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">delete</span>
+              <span class="">Eliminar</span>
+            </button>
+          </div>
+        </div>
+      
+        <div class="relative flex flex-col justify-between rounded-xl bg-surface-container-lowest p-space-md shadow-sm hover:shadow-md transition">
+          <!-- Card Header -->
+          <div>
+            <div class="flex items-start justify-between gap-space-sm mb-1">
+              <div>
+                <span class="font-mono text-label-sm font-semibold text-primary">INC-1041</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold hover:text-primary transition cursor-pointer" onclick="handleViewDetail(5)">
+                  un ejemplolo mas
+                </h3>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-semibold bg-emerald-100 text-emerald-800">
+             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+             Active
+           </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-bold bg-primary-container text-on-primary">High</span>
+              </div>
+            </div>
+
+            <!-- Body Description -->
+            <div class="mt-2 text-body-md font-body-md text-on-surface">
+              <span class="font-semibold text-on-surface-variant">Descripción:</span> dfdfdfdf - Error de autenticación LDAP en terminales de biblioteca
+            </div>
+
+            <!-- Rejection reason if present -->
+            <div class="mt-2.5 p-2 rounded-lg bg-surface-container-low text-body-sm font-body-sm flex items-start gap-1.5">
+             <span class="font-semibold text-on-surface-variant shrink-0">Razones del rechazo:</span>
+             <span class="text-on-surface break-words">probando</span>
+           </div>
+
+            <!-- Footnote timestamp -->
+            <div class="mt-3 flex items-center justify-between text-label-sm font-label-sm text-outline font-mono">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">schedule</span>
+                Created: 2025-11-01T17:44:55.406
+              </span>
+              <span class="text-on-surface-variant truncate max-w-[130px]" title="Arequipa - Biblioteca Central">Arequipa - Biblioteca Central</span>
+            </div>
+          </div>
+
+          <!-- Bottom Endpoint Action Bar -->
+          <div class="mt-space-md pt-space-sm border-t border-surface-container flex items-center justify-between gap-space-xs">
+            <button onclick="handleViewDetail(5)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 font-label-md text-label-md transition" title="GET /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">visibility</span>
+              <span class="">Detalle</span>
+            </button>
+
+            <button onclick="handleOpenPatch(5)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 font-label-md text-label-md transition" title="PATCH /api/incidents/{id}/status">
+              <span class="material-symbols-outlined text-base">edit</span>
+              <span class="">Editar Estado</span>
+            </button>
+
+            <button onclick="handleDelete(5)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary-container/10 font-label-md text-label-md transition" title="DELETE /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">delete</span>
+              <span class="">Eliminar</span>
+            </button>
+          </div>
+        </div>
+      
+        <div class="relative flex flex-col justify-between rounded-xl bg-surface-container-lowest p-space-md shadow-sm hover:shadow-md transition">
+          <!-- Card Header -->
+          <div>
+            <div class="flex items-start justify-between gap-space-sm mb-1">
+              <div>
+                <span class="font-mono text-label-sm font-semibold text-primary">INC-1040</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold hover:text-primary transition cursor-pointer" onclick="handleViewDetail(6)">
+                  Cámara de vigilancia sin señal
+                </h3>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-semibold bg-surface-container text-on-surface-variant">
+             <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+             Inactive
+           </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-bold bg-amber-500 text-white">Medium</span>
+              </div>
+            </div>
+
+            <!-- Body Description -->
+            <div class="mt-2 text-body-md font-body-md text-on-surface">
+              <span class="font-semibold text-on-surface-variant">Descripción:</span> Cámara IP de entrada principal no emite flujo RTSP al grabador NVR.
+            </div>
+
+            <!-- Rejection reason if present -->
+            <div class="mt-2.5 p-2 rounded-lg bg-surface-container-low text-body-sm font-body-sm flex items-start gap-1.5">
+             <span class="font-semibold text-on-surface-variant shrink-0">Razones del rechazo:</span>
+             <span class="text-on-surface break-words">Conector RJ45 reemplazado con éxito.</span>
+           </div>
+
+            <!-- Footnote timestamp -->
+            <div class="mt-3 flex items-center justify-between text-label-sm font-label-sm text-outline font-mono">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">schedule</span>
+                Created: 2025-11-01T18:10:12.102
+              </span>
+              <span class="text-on-surface-variant truncate max-w-[130px]" title="Chiclayo - Acceso Vehicular">Chiclayo - Acceso Vehicular</span>
+            </div>
+          </div>
+
+          <!-- Bottom Endpoint Action Bar -->
+          <div class="mt-space-md pt-space-sm border-t border-surface-container flex items-center justify-between gap-space-xs">
+            <button onclick="handleViewDetail(6)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 font-label-md text-label-md transition" title="GET /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">visibility</span>
+              <span class="">Detalle</span>
+            </button>
+
+            <button onclick="handleOpenPatch(6)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 font-label-md text-label-md transition" title="PATCH /api/incidents/{id}/status">
+              <span class="material-symbols-outlined text-base">edit</span>
+              <span class="">Editar Estado</span>
+            </button>
+
+            <button onclick="handleDelete(6)" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary-container/10 font-label-md text-label-md transition" title="DELETE /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">delete</span>
+              <span class="">Eliminar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+<!-- Alternative Table View (Hidden by default) -->
+<div class="hidden rounded-xl bg-surface-container-lowest shadow-sm overflow-x-auto" id="tableContainer">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<tr>
+<th class="py-3 px-4">Ticket</th>
+<th class="py-3 px-4">Título &amp; Ubicación</th>
+<th class="py-3 px-4">Estado</th>
+<th class="py-3 px-4">Prioridad</th>
+<th class="py-3 px-4">Motivo Rechazo / Solución</th>
+<th class="py-3 px-4">Creado</th>
+<th class="py-3 px-4 text-right">Acciones Endpoint</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface" id="tableBody">
+        <tr class="border-b border-surface-container hover:bg-surface-container-low transition">
+          <td class="py-3 px-4 font-mono font-semibold text-primary">INC-1045</td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-on-surface">Ejemplo de título</div>
+            <div class="text-on-surface-variant text-label-sm">Lima Centro - Aula Magna</div>
+          </td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-semibold bg-surface-container text-on-surface-variant">Inactive</span></td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-bold bg-primary-container text-on-primary">High</span></td>
+          <td class="py-3 px-4 text-on-surface-variant max-w-xs truncate">pepitoooo</td>
+          <td class="py-3 px-4 font-mono text-label-sm text-outline">2025-10-31</td>
+          <td class="py-3 px-4 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button onclick="handleViewDetail(1)" class="p-1 rounded text-tertiary hover:bg-tertiary/10" title="Ver Detalle (GET)">
+                <span class="material-symbols-outlined text-base">visibility</span>
+              </button>
+              <button onclick="handleOpenPatch(1)" class="p-1 rounded text-amber-600 hover:bg-amber-500/10" title="Editar Estado (PATCH)">
+                <span class="material-symbols-outlined text-base">edit</span>
+              </button>
+              <button onclick="handleDelete(1)" class="p-1 rounded text-primary hover:bg-primary-container/10" title="Eliminar (DELETE)">
+                <span class="material-symbols-outlined text-base">delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="border-b border-surface-container hover:bg-surface-container-low transition">
+          <td class="py-3 px-4 font-mono font-semibold text-primary">INC-1044</td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-on-surface">Ejemplo de título 2</div>
+            <div class="text-on-surface-variant text-label-sm">San Juan de Lurigancho - Pabellón A</div>
+          </td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-semibold bg-emerald-100 text-emerald-800">Active</span></td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-bold bg-primary-container text-on-primary">High</span></td>
+          <td class="py-3 px-4 text-on-surface-variant max-w-xs truncate">—</td>
+          <td class="py-3 px-4 font-mono text-label-sm text-outline">2025-10-31</td>
+          <td class="py-3 px-4 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button onclick="handleViewDetail(2)" class="p-1 rounded text-tertiary hover:bg-tertiary/10" title="Ver Detalle (GET)">
+                <span class="material-symbols-outlined text-base">visibility</span>
+              </button>
+              <button onclick="handleOpenPatch(2)" class="p-1 rounded text-amber-600 hover:bg-amber-500/10" title="Editar Estado (PATCH)">
+                <span class="material-symbols-outlined text-base">edit</span>
+              </button>
+              <button onclick="handleDelete(2)" class="p-1 rounded text-primary hover:bg-primary-container/10" title="Eliminar (DELETE)">
+                <span class="material-symbols-outlined text-base">delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="border-b border-surface-container hover:bg-surface-container-low transition">
+          <td class="py-3 px-4 font-mono font-semibold text-primary">INC-1043</td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-on-surface">Ejemplo de título 3</div>
+            <div class="text-on-surface-variant text-label-sm">Data Center Campus Central</div>
+          </td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-semibold bg-emerald-100 text-emerald-800">Active</span></td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-bold bg-primary-container text-on-primary">High</span></td>
+          <td class="py-3 px-4 text-on-surface-variant max-w-xs truncate">—</td>
+          <td class="py-3 px-4 font-mono text-label-sm text-outline">2025-10-31</td>
+          <td class="py-3 px-4 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button onclick="handleViewDetail(3)" class="p-1 rounded text-tertiary hover:bg-tertiary/10" title="Ver Detalle (GET)">
+                <span class="material-symbols-outlined text-base">visibility</span>
+              </button>
+              <button onclick="handleOpenPatch(3)" class="p-1 rounded text-amber-600 hover:bg-amber-500/10" title="Editar Estado (PATCH)">
+                <span class="material-symbols-outlined text-base">edit</span>
+              </button>
+              <button onclick="handleDelete(3)" class="p-1 rounded text-primary hover:bg-primary-container/10" title="Eliminar (DELETE)">
+                <span class="material-symbols-outlined text-base">delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="border-b border-surface-container hover:bg-surface-container-low transition">
+          <td class="py-3 px-4 font-mono font-semibold text-primary">INC-1042</td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-on-surface">Ejemplo de título 4</div>
+            <div class="text-on-surface-variant text-label-sm">Lima Norte - Piso 3</div>
+          </td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-semibold bg-emerald-100 text-emerald-800">Active</span></td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-bold bg-primary-container text-on-primary">High</span></td>
+          <td class="py-3 px-4 text-on-surface-variant max-w-xs truncate">—</td>
+          <td class="py-3 px-4 font-mono text-label-sm text-outline">2025-10-31</td>
+          <td class="py-3 px-4 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button onclick="handleViewDetail(4)" class="p-1 rounded text-tertiary hover:bg-tertiary/10" title="Ver Detalle (GET)">
+                <span class="material-symbols-outlined text-base">visibility</span>
+              </button>
+              <button onclick="handleOpenPatch(4)" class="p-1 rounded text-amber-600 hover:bg-amber-500/10" title="Editar Estado (PATCH)">
+                <span class="material-symbols-outlined text-base">edit</span>
+              </button>
+              <button onclick="handleDelete(4)" class="p-1 rounded text-primary hover:bg-primary-container/10" title="Eliminar (DELETE)">
+                <span class="material-symbols-outlined text-base">delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="border-b border-surface-container hover:bg-surface-container-low transition">
+          <td class="py-3 px-4 font-mono font-semibold text-primary">INC-1041</td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-on-surface">un ejemplolo mas</div>
+            <div class="text-on-surface-variant text-label-sm">Arequipa - Biblioteca Central</div>
+          </td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-semibold bg-emerald-100 text-emerald-800">Active</span></td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-bold bg-primary-container text-on-primary">High</span></td>
+          <td class="py-3 px-4 text-on-surface-variant max-w-xs truncate">probando</td>
+          <td class="py-3 px-4 font-mono text-label-sm text-outline">2025-11-01</td>
+          <td class="py-3 px-4 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button onclick="handleViewDetail(5)" class="p-1 rounded text-tertiary hover:bg-tertiary/10" title="Ver Detalle (GET)">
+                <span class="material-symbols-outlined text-base">visibility</span>
+              </button>
+              <button onclick="handleOpenPatch(5)" class="p-1 rounded text-amber-600 hover:bg-amber-500/10" title="Editar Estado (PATCH)">
+                <span class="material-symbols-outlined text-base">edit</span>
+              </button>
+              <button onclick="handleDelete(5)" class="p-1 rounded text-primary hover:bg-primary-container/10" title="Eliminar (DELETE)">
+                <span class="material-symbols-outlined text-base">delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      
+        <tr class="border-b border-surface-container hover:bg-surface-container-low transition">
+          <td class="py-3 px-4 font-mono font-semibold text-primary">INC-1040</td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-on-surface">Cámara de vigilancia sin señal</div>
+            <div class="text-on-surface-variant text-label-sm">Chiclayo - Acceso Vehicular</div>
+          </td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-semibold bg-surface-container text-on-surface-variant">Inactive</span></td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-label-sm font-bold bg-amber-500 text-white">Medium</span></td>
+          <td class="py-3 px-4 text-on-surface-variant max-w-xs truncate">Conector RJ45 reemplazado con éxito.</td>
+          <td class="py-3 px-4 font-mono text-label-sm text-outline">2025-11-01</td>
+          <td class="py-3 px-4 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button onclick="handleViewDetail(6)" class="p-1 rounded text-tertiary hover:bg-tertiary/10" title="Ver Detalle (GET)">
+                <span class="material-symbols-outlined text-base">visibility</span>
+              </button>
+              <button onclick="handleOpenPatch(6)" class="p-1 rounded text-amber-600 hover:bg-amber-500/10" title="Editar Estado (PATCH)">
+                <span class="material-symbols-outlined text-base">edit</span>
+              </button>
+              <button onclick="handleDelete(6)" class="p-1 rounded text-primary hover:bg-primary-container/10" title="Eliminar (DELETE)">
+                <span class="material-symbols-outlined text-base">delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+</table>
+</div>
+<!-- Empty State Fallback -->
+<div class="hidden py-16 flex-col items-center justify-center text-center" id="emptyState">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-outline mb-3">
+<span class="material-symbols-outlined text-3xl">inbox</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Sin incidentes encontrados</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm mb-4">No se hallaron registros que coincidan con los filtros aplicados o la búsqueda.</p>
+<button class="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md" id="btnResetFilters">
+        Restablecer Filtros
+      </button>
+</div>
+</section>
+<!-- Swagger API Drawer / Inspector (Modal Bottom/Side) -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4" id="apiDocsModal">
+<div class="relative w-full max-w-3xl max-h-[85vh] rounded-2xl bg-surface-container-lowest p-space-lg shadow-2xl flex flex-col overflow-hidden">
+<!-- Modal Header -->
+<div class="flex items-center justify-between pb-space-md border-b border-surface-container">
+<div class="flex items-center gap-space-sm">
+<div class="p-2 rounded-lg bg-primary-container text-on-primary">
+<span class="material-symbols-outlined text-xl">api</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Endpoints UTP incident-controller</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Host: https://api-incident.onrender.com | OpenAPI Specification 3.0</p>
+</div>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface" id="btnCloseDocs">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+</div>
+<!-- Modal Body: Swagger Endpoints Visualized -->
+<div class="flex-1 overflow-y-auto py-space-md space-y-3">
+<!-- GET All -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded font-label-sm text-label-sm font-bold bg-sky-600 text-white">GET</span>
+<code class="font-mono text-body-sm text-on-surface font-semibold">/api/incidents</code>
+</div>
+<span class="font-label-sm text-label-sm text-emerald-600 font-medium">200 OK Array<incident></incident></span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Obtiene el listado completo de incidencias reportadas en sedes UTP.</p>
+</div>
+<!-- POST Create -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded font-label-sm text-label-sm font-bold bg-emerald-600 text-white">POST</span>
+<code class="font-mono text-body-sm text-on-surface font-semibold">/api/incidents</code>
+</div>
+<span class="font-label-sm text-label-sm text-emerald-600 font-medium">201 Created</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Crea un nuevo ticket asignando título, descripción, prioridad y estado inicial.</p>
+<pre class="bg-surface-container-highest p-2 rounded-lg text-label-sm font-mono text-on-surface overflow-x-auto">{
+  "title": "Falla Switch Core Pabellón C",
+  "description": "Pérdida de conectividad intermitente",
+  "priority": "High",
+  "status": "Active"
+}</pre>
+</div>
+<!-- PATCH Status -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded font-label-sm text-label-sm font-bold bg-amber-500 text-white">PATCH</span>
+<code class="font-mono text-body-sm text-on-surface font-semibold">/api/incidents/{id}/status</code>
+</div>
+<span class="font-label-sm text-label-sm text-emerald-600 font-medium">200 OK</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Alterna o actualiza el estado (Active / Inactive) e incluye motivo de resolución o rechazo.</p>
+</div>
+<!-- GET by ID -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded font-label-sm text-label-sm font-bold bg-sky-600 text-white">GET</span>
+<code class="font-mono text-body-sm text-on-surface font-semibold">/api/incidents/{id}</code>
+</div>
+<span class="font-label-sm text-label-sm text-emerald-600 font-medium">200 OK Incident</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Obtiene el objeto detallado del incidente por su identificador numérico.</p>
+</div>
+<!-- DELETE -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded font-label-sm text-label-sm font-bold bg-red-600 text-white">DELETE</span>
+<code class="font-mono text-body-sm text-on-surface font-semibold">/api/incidents/{id}</code>
+</div>
+<span class="font-label-sm text-label-sm text-emerald-600 font-medium">204 No Content</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Elimina permanentemente el registro del servidor central.</p>
+</div>
+</div>
+<div class="pt-space-md border-t border-surface-container flex justify-end">
+<button class="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md" id="btnDismissDocs">
+          Entendido
+        </button>
+</div>
+</div>
+</div>
+<!-- Modal: Crear Nuevo Incidente (POST /api/incidents) -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm items-center justify-center p-4 hidden" id="createModal">
+<div class="relative w-full max-w-xl rounded-2xl bg-surface-container-lowest p-space-lg shadow-2xl flex flex-col overflow-hidden">
+<div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+<div class="flex items-center gap-space-sm">
+<div class="p-2 rounded-lg bg-primary-container text-on-primary">
+<span class="material-symbols-outlined text-xl">add_alert</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Registrar Incidente TI</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">POST /api/incidents • Mesa de Servicio UTP</p>
+</div>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface" id="btnCloseCreate">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+</div>
+<form class="py-space-md space-y-space-md" id="createIncidentForm">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">Título del Incidente <span class="text-primary">*</span></label>
+<input class="w-full px-3 py-2 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20" id="newTitle" placeholder="ej. Caída de Access Point - Piso 4 Torre Arequipa" required="" type="text">
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">Descripción Técnica <span class="text-primary">*</span></label>
+<textarea class="w-full px-3 py-2 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20" id="newDescription" placeholder="Detalles del fallo de conectividad, equipos afectados o usuarios impactados..." required="" rows="3"></textarea>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">Nivel de Prioridad</label>
+<select class="w-full px-3 py-2 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface focus:outline-none cursor-pointer" id="newPriority">
+<option selected="" value="High">High (Crítico - Afecta Clases)</option>
+<option value="Medium">Medium (Parcial / En espera)</option>
+<option value="Low">Low (Consulta / Mantenimiento)</option>
+</select>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">Estado Inicial</label>
+<select class="w-full px-3 py-2 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface focus:outline-none cursor-pointer" id="newStatus">
+<option selected="" value="Active">Active (En atención)</option>
+<option value="Inactive">Inactive (Resuelto / Cerrado)</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">Sede / Ubicación UTP</label>
+<input class="w-full px-3 py-2 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20" id="newLocation" placeholder="ej. Lima Centro - Pabellón B, Aula 502" type="text" value="Lima Centro - Torre Tecnológica">
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant">
+<span class="">Payload JSON validado con Schema Incident</span>
+<span class="font-mono text-tertiary">Content-Type: application/json</span>
+</div>
+<div class="pt-space-sm border-t border-surface-container flex items-center justify-end gap-space-sm">
+<button class="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md" id="btnCancelCreate" type="button">
+            Cancelar
+          </button>
+<button class="px-5 py-2 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg shadow-md transition" type="submit">
+            Enviar POST Ticket
+          </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Modal: Editar Estado / Motivo de Rechazo (PATCH /api/incidents/{id}/status) -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4" id="statusModal">
+<div class="relative w-full max-w-lg rounded-2xl bg-surface-container-lowest p-space-lg shadow-2xl flex flex-col overflow-hidden">
+<div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+<div class="flex items-center gap-space-sm">
+<div class="p-2 rounded-lg bg-amber-500/10 text-amber-600">
+<span class="material-symbols-outlined text-xl">edit_note</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Actualizar Estado</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant" id="patchModalSubtitle">PATCH /api/incidents/1/status</p>
+</div>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface" id="btnCloseStatus">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+</div>
+<form class="py-space-md space-y-space-md" id="patchStatusForm">
+<input id="patchIncidentId" type="hidden">
+<div>
+<span class="block font-label-md text-label-md text-on-surface mb-2">Seleccionar Nuevo Estado</span>
+<div class="grid grid-cols-2 gap-space-sm">
+<label class="cursor-pointer flex items-center gap-2 p-3 rounded-xl bg-surface-container-low has-[:checked]:bg-emerald-500/10 has-[:checked]:text-emerald-700 transition">
+<input class="accent-emerald-600" id="radioStatusActive" name="targetStatus" type="radio" value="Active">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-semibold">Active</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">En curso / Técnico asignado</span>
+</div>
+</label>
+<label class="cursor-pointer flex items-center gap-2 p-3 rounded-xl bg-surface-container-low has-[:checked]:bg-surface-container-highest has-[:checked]:text-on-surface transition">
+<input class="accent-slate-700" id="radioStatusInactive" name="targetStatus" type="radio" value="Inactive">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-semibold">Inactive</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Solucionado / Cerrado</span>
+</div>
+</label>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">Razones del rechazo / Notas de resolución</label>
+<textarea class="w-full px-3 py-2 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-amber-500/20" id="patchReason" placeholder="ej. 'Resuelto tras reinicio de switch poe', 'pepitoooo' o razón de desestimación..." rows="3"></textarea>
+</div>
+<div class="pt-space-sm border-t border-surface-container flex items-center justify-end gap-space-sm">
+<button class="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md" id="btnCancelStatus" type="button">
+            Cancelar
+          </button>
+<button class="px-5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-label-lg text-label-lg shadow-md transition" type="submit">
+            Ejecutar PATCH
+          </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Modal: Detalle Extendido (GET /api/incidents/{id}) -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4" id="detailModal">
+<div class="relative w-full max-w-xl rounded-2xl bg-surface-container-lowest p-space-lg shadow-2xl flex flex-col overflow-hidden">
+<div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+<div class="flex items-center gap-space-sm">
+<div class="p-2 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined text-xl">info</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface" id="detailTicketId">Ticket #INC-001</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Detalle inspeccionado vía GET /api/incidents/{id}</p>
+</div>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface" id="btnCloseDetail">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+</div>
+<div class="py-space-md space-y-space-md">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Título</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-0.5" id="detailTitle">Título del Incidente</h3>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Descripción</span>
+<p class="font-body-md text-body-md text-on-surface mt-0.5 p-3 rounded-lg bg-surface-container-low" id="detailDescription">Descripción completa</p>
+</div>
+<div class="grid grid-cols-2 gap-space-md">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Estado Actual</span>
+<div class="mt-1" id="detailStatusBadge"></div>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Nivel de Prioridad</span>
+<div class="mt-1" id="detailPriorityBadge"></div>
+</div>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Razones del rechazo / Notas</span>
+<p class="font-body-md text-body-md text-on-surface mt-0.5 p-3 rounded-lg bg-surface-container-low" id="detailRejection">Ninguna registrada</p>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1 text-label-sm font-label-sm text-on-surface-variant">
+<span id="detailCreatedAt" class="">Created: 2025-10-31T14:24:58.847</span>
+<span id="detailLocation" class="">Ubicación: Sede Lima Centro</span>
+</div>
+</div>
+<div class="pt-space-sm border-t border-surface-container flex justify-end">
+<button class="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md" id="btnDismissDetail">
+          Cerrar Detalle
+        </button>
+</div>
+</div>
+</div>
+<!-- Global Quick Add FAB (Consistent with Style Guide) -->
+
+</div>
+<!-- Pure Vanilla Client-Side Controller -->
+<script>
+  // Initial Mock Data corresponding to user's real app + campus context
+  const INITIAL_INCIDENTS = [
+    {
+      id: 1,
+      ticketCode: "INC-1045",
+      title: "Ejemplo de título",
+      description: "Descripción del ítem - Falla en proyector Epson Aula Magna Pabellón B",
+      rejectionReason: "pepitoooo",
+      status: "Inactive",
+      priority: "High",
+      createdAt: "2025-10-31T14:24:58.847",
+      location: "Lima Centro - Aula Magna"
+    },
+    {
+      id: 2,
+      ticketCode: "INC-1044",
+      title: "Ejemplo de título 2",
+      description: "Descripción del ítem - Caída enlace Wi-Fi Eduroam en Laboratorio de Cómputo 3",
+      rejectionReason: "",
+      status: "Active",
+      priority: "High",
+      createdAt: "2025-10-31T14:25:04.414",
+      location: "San Juan de Lurigancho - Pabellón A"
+    },
+    {
+      id: 3,
+      ticketCode: "INC-1043",
+      title: "Ejemplo de título 3",
+      description: "Descripción del ítem - Reinicio no programado Servidor Canvas / Portal del Estudiante",
+      rejectionReason: "",
+      status: "Active",
+      priority: "High",
+      createdAt: "2025-10-31T14:25:09.954",
+      location: "Data Center Campus Central"
+    },
+    {
+      id: 4,
+      ticketCode: "INC-1042",
+      title: "Ejemplo de título 4",
+      description: "Descripción del ítem - Cable de red UTP desprendido en Rack de Telecomunicaciones",
+      rejectionReason: "",
+      status: "Active",
+      priority: "High",
+      createdAt: "2025-10-31T14:25:15.170",
+      location: "Lima Norte - Piso 3"
+    },
+    {
+      id: 5,
+      ticketCode: "INC-1041",
+      title: "un ejemplolo mas",
+      description: "dfdfdfdf - Error de autenticación LDAP en terminales de biblioteca",
+      rejectionReason: "probando",
+      status: "Active",
+      priority: "High",
+      createdAt: "2025-11-01T17:44:55.406",
+      location: "Arequipa - Biblioteca Central"
+    },
+    {
+      id: 6,
+      ticketCode: "INC-1040",
+      title: "Cámara de vigilancia sin señal",
+      description: "Cámara IP de entrada principal no emite flujo RTSP al grabador NVR.",
+      rejectionReason: "Conector RJ45 reemplazado con éxito.",
+      status: "Inactive",
+      priority: "Medium",
+      createdAt: "2025-11-01T18:10:12.102",
+      location: "Chiclayo - Acceso Vehicular"
+    }
+  ];
+
+  let incidentStore = [...INITIAL_INCIDENTS];
+  let activeStatusFilter = "ALL";
+  let activePriorityFilter = "ALL";
+  let currentSearchQuery = "";
+  let currentView = "cards"; // "cards" | "table"
+
+  // Toast Helper
+  function showToast(title, message, isSuccess = true) {
+    const toast = document.getElementById("liveToast");
+    const toastTitle = document.getElementById("toastTitle");
+    const toastMsg = document.getElementById("toastMessage");
+    const toastIcon = document.getElementById("toastIcon");
+    const toastIconBg = document.getElementById("toastIconBg");
+
+    toastTitle.textContent = title;
+    toastMsg.textContent = message;
+
+    if (isSuccess) {
+      toastIcon.textContent = "check_circle";
+      toastIconBg.className = "p-2 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center";
+    } else {
+      toastIcon.textContent = "delete_sweep";
+      toastIconBg.className = "p-2 rounded-lg bg-red-100 text-red-700 flex items-center justify-center";
+    }
+
+    toast.classList.remove("translate-x-full", "opacity-0");
+    toast.classList.add("translate-x-0", "opacity-100");
+
+    setTimeout(() => {
+      toast.classList.remove("translate-x-0", "opacity-100");
+      toast.classList.add("translate-x-full", "opacity-0");
+    }, 3500);
+  }
+
+  // Format date readable
+  function formatTimestamp(isoString) {
+    if (!isoString) return "Fecha no registrada";
+    try {
+      const date = new Date(isoString);
+      return date.toLocaleString('es-PE', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    } catch(e) {
+      return isoString;
+    }
+  }
+
+  // Render & Filter Controller
+  function refreshWorkspace() {
+    const filtered = incidentStore.filter(item => {
+      const matchStatus = activeStatusFilter === "ALL" || item.status === activeStatusFilter;
+      const matchPriority = activePriorityFilter === "ALL" || item.priority === activePriorityFilter;
+      const q = currentSearchQuery.toLowerCase();
+      const matchQuery = !q || 
+        item.title.toLowerCase().includes(q) || 
+        item.description.toLowerCase().includes(q) || 
+        item.ticketCode.toLowerCase().includes(q) ||
+        (item.rejectionReason && item.rejectionReason.toLowerCase().includes(q));
+
+      return matchStatus && matchPriority && matchQuery;
+    });
+
+    // Update KPI badges
+    const totalCount = incidentStore.length;
+    const activeCount = incidentStore.filter(i => i.status === "Active").length;
+    const inactiveCount = incidentStore.filter(i => i.status === "Inactive").length;
+    const highCount = incidentStore.filter(i => i.priority === "High").length;
+
+    document.getElementById("statTotal").textContent = totalCount;
+    document.getElementById("statActive").textContent = activeCount;
+    document.getElementById("statInactive").textContent = inactiveCount;
+    document.getElementById("statHigh").textContent = highCount;
+
+    const cardsContainer = document.getElementById("cardsContainer");
+    const tableContainer = document.getElementById("tableContainer");
+    const tableBody = document.getElementById("tableBody");
+    const emptyState = document.getElementById("emptyState");
+
+    if (filtered.length === 0) {
+      cardsContainer.innerHTML = "";
+      tableBody.innerHTML = "";
+      cardsContainer.classList.add("hidden");
+      tableContainer.classList.add("hidden");
+      emptyState.classList.remove("hidden");
+      emptyState.classList.add("flex");
+      return;
+    } else {
+      emptyState.classList.add("hidden");
+      emptyState.classList.remove("flex");
+      if (currentView === "cards") {
+        cardsContainer.classList.remove("hidden");
+        tableContainer.classList.add("hidden");
+      } else {
+        cardsContainer.classList.add("hidden");
+        tableContainer.classList.remove("hidden");
+      }
+    }
+
+    // Render Cards
+    cardsContainer.innerHTML = filtered.map(item => {
+      const isActive = item.status === "Active";
+      const statusBadge = isActive
+        ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-semibold bg-emerald-100 text-emerald-800">
+             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+             Active
+           </span>`
+        : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-semibold bg-surface-container text-on-surface-variant">
+             <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+             Inactive
+           </span>`;
+
+      const priorityBadge = item.priority === "High"
+        ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-bold bg-primary-container text-on-primary">High</span>`
+        : item.priority === "Medium"
+        ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-bold bg-amber-500 text-white">Medium</span>`
+        : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-bold bg-sky-600 text-white">Low</span>`;
+
+      const rejectionBox = item.rejectionReason
+        ? `<div class="mt-2.5 p-2 rounded-lg bg-surface-container-low text-body-sm font-body-sm flex items-start gap-1.5">
+             <span class="font-semibold text-on-surface-variant shrink-0">Razones del rechazo:</span>
+             <span class="text-on-surface break-words">${item.rejectionReason}</span>
+           </div>`
+        : "";
+
+      return `
+        <div class="relative flex flex-col justify-between rounded-xl bg-surface-container-lowest p-space-md shadow-sm hover:shadow-md transition">
+          <!-- Card Header -->
+          <div>
+            <div class="flex items-start justify-between gap-space-sm mb-1">
+              <div>
+                <span class="font-mono text-label-sm text-label-sm font-semibold text-primary">${item.ticketCode}</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold hover:text-primary transition cursor-pointer" onclick="handleViewDetail(${item.id})">
+                  ${item.title}
+                </h3>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                ${statusBadge}
+                ${priorityBadge}
+              </div>
+            </div>
+
+            <!-- Body Description -->
+            <div class="mt-2 text-body-md font-body-md text-on-surface">
+              <span class="font-semibold text-on-surface-variant">Descripción:</span> ${item.description}
+            </div>
+
+            <!-- Rejection reason if present -->
+            ${rejectionBox}
+
+            <!-- Footnote timestamp -->
+            <div class="mt-3 flex items-center justify-between text-label-sm font-label-sm text-outline font-mono">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">schedule</span>
+                Created: ${item.createdAt}
+              </span>
+              <span class="text-on-surface-variant truncate max-w-[130px]" title="${item.location}">${item.location || 'Campus UTP'}</span>
+            </div>
+          </div>
+
+          <!-- Bottom Endpoint Action Bar -->
+          <div class="mt-space-md pt-space-sm border-t border-surface-container flex items-center justify-between gap-space-xs">
+            <button onclick="handleViewDetail(${item.id})" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 font-label-md text-label-md transition" title="GET /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">visibility</span>
+              <span>Detalle</span>
+            </button>
+
+            <button onclick="handleOpenPatch(${item.id})" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 font-label-md text-label-md transition" title="PATCH /api/incidents/{id}/status">
+              <span class="material-symbols-outlined text-base">edit</span>
+              <span>Editar Estado</span>
+            </button>
+
+            <button onclick="handleDelete(${item.id})" class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary-container/10 font-label-md text-label-md transition" title="DELETE /api/incidents/{id}">
+              <span class="material-symbols-outlined text-base">delete</span>
+              <span>Eliminar</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    // Render Table Rows
+    tableBody.innerHTML = filtered.map(item => {
+      const isActive = item.status === "Active";
+      const statusPill = isActive
+        ? `<span class="px-2 py-0.5 rounded-full text-label-sm font-semibold bg-emerald-100 text-emerald-800">Active</span>`
+        : `<span class="px-2 py-0.5 rounded-full text-label-sm font-semibold bg-surface-container text-on-surface-variant">Inactive</span>`;
+
+      const priorityPill = item.priority === "High"
+        ? `<span class="px-2 py-0.5 rounded-full text-label-sm font-bold bg-primary-container text-on-primary">High</span>`
+        : `<span class="px-2 py-0.5 rounded-full text-label-sm font-bold bg-amber-500 text-white">${item.priority}</span>`;
+
+      return `
+        <tr class="border-b border-surface-container hover:bg-surface-container-low transition">
+          <td class="py-3 px-4 font-mono font-semibold text-primary">${item.ticketCode}</td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-on-surface">${item.title}</div>
+            <div class="text-on-surface-variant text-label-sm">${item.location || 'Sede Lima'}</div>
+          </td>
+          <td class="py-3 px-4">${statusPill}</td>
+          <td class="py-3 px-4">${priorityPill}</td>
+          <td class="py-3 px-4 text-on-surface-variant max-w-xs truncate">${item.rejectionReason || '—'}</td>
+          <td class="py-3 px-4 font-mono text-label-sm text-outline">${item.createdAt.split('T')[0]}</td>
+          <td class="py-3 px-4 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button onclick="handleViewDetail(${item.id})" class="p-1 rounded text-tertiary hover:bg-tertiary/10" title="Ver Detalle (GET)">
+                <span class="material-symbols-outlined text-base">visibility</span>
+              </button>
+              <button onclick="handleOpenPatch(${item.id})" class="p-1 rounded text-amber-600 hover:bg-amber-500/10" title="Editar Estado (PATCH)">
+                <span class="material-symbols-outlined text-base">edit</span>
+              </button>
+              <button onclick="handleDelete(${item.id})" class="p-1 rounded text-primary hover:bg-primary-container/10" title="Eliminar (DELETE)">
+                <span class="material-symbols-outlined text-base">delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  // Action: Open GET Detail (GET /api/incidents/{id})
+  window.handleViewDetail = function(id) {
+    const item = incidentStore.find(i => i.id === id);
+    if (!item) return;
+
+    document.getElementById("detailTicketId").textContent = `${item.ticketCode} (ID: ${item.id})`;
+    document.getElementById("detailTitle").textContent = item.title;
+    document.getElementById("detailDescription").textContent = item.description;
+    document.getElementById("detailRejection").textContent = item.rejectionReason || "Sin observaciones ni razones de rechazo registradas.";
+    document.getElementById("detailCreatedAt").textContent = `Created: ${item.createdAt} (${formatTimestamp(item.createdAt)})`;
+    document.getElementById("detailLocation").textContent = `Ubicación: ${item.location || 'Campus UTP Central'}`;
+
+    const statusBadge = document.getElementById("detailStatusBadge");
+    statusBadge.innerHTML = item.status === "Active"
+      ? `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-label-sm font-semibold bg-emerald-100 text-emerald-800">● Active</span>`
+      : `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-label-sm font-semibold bg-surface-container text-on-surface-variant">○ Inactive</span>`;
+
+    const prioBadge = document.getElementById("detailPriorityBadge");
+    prioBadge.innerHTML = `<span class="inline-flex items-center px-3 py-1 rounded-full text-label-sm font-bold ${
+      item.priority === 'High' ? 'bg-primary-container text-on-primary' : 'bg-amber-500 text-white'
+    }">${item.priority}</span>`;
+
+    document.getElementById("detailModal").classList.remove("hidden");
+    document.getElementById("detailModal").classList.add("flex");
+  };
+
+  // Action: Open PATCH Status (PATCH /api/incidents/{id}/status)
+  window.handleOpenPatch = function(id) {
+    const item = incidentStore.find(i => i.id === id);
+    if (!item) return;
+
+    document.getElementById("patchIncidentId").value = item.id;
+    document.getElementById("patchModalSubtitle").textContent = `PATCH /api/incidents/${item.id}/status • ${item.ticketCode}`;
+    document.getElementById("patchReason").value = item.rejectionReason || "";
+
+    if (item.status === "Active") {
+      document.getElementById("radioStatusActive").checked = true;
+    } else {
+      document.getElementById("radioStatusInactive").checked = true;
+    }
+
+    document.getElementById("statusModal").classList.remove("hidden");
+    document.getElementById("statusModal").classList.add("flex");
+  };
+
+  // Action: Delete (DELETE /api/incidents/{id})
+  window.handleDelete = function(id) {
+    const item = incidentStore.find(i => i.id === id);
+    if (!item) return;
+
+    const confirmed = confirm(`¿Confirmar eliminación del incidente #${item.ticketCode} (${item.title})?\n\nEndpoint: DELETE /api/incidents/${id}`);
+    if (confirmed) {
+      incidentStore = incidentStore.filter(i => i.id !== id);
+      refreshWorkspace();
+      showToast("Incidente Eliminado", `DELETE /api/incidents/${id} ejecutado correctamente (HTTP 204).`, false);
+    }
+  };
+
+  // Event Listeners Initialization
+  document.addEventListener("DOMContentLoaded", () => {
+    // Search input
+    const searchInput = document.getElementById("searchInput");
+    const clearSearch = document.getElementById("btnClearSearch");
+
+    searchInput.addEventListener("input", (e) => {
+      currentSearchQuery = e.target.value.trim();
+      clearSearch.classList.toggle("hidden", currentSearchQuery.length === 0);
+      refreshWorkspace();
+    });
+
+    clearSearch.addEventListener("click", () => {
+      searchInput.value = "";
+      currentSearchQuery = "";
+      clearSearch.classList.add("hidden");
+      refreshWorkspace();
+    });
+
+    // Status filter buttons
+    document.querySelectorAll(".filter-status-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-status-btn").forEach(b => {
+          b.className = "filter-status-btn px-3 py-1.5 rounded-md font-label-sm text-label-sm font-medium text-on-surface-variant hover:text-on-surface transition";
+        });
+        btn.className = "filter-status-btn px-3 py-1.5 rounded-md font-label-sm text-label-sm font-semibold bg-surface-container-lowest text-on-surface shadow-sm transition";
+        activeStatusFilter = btn.dataset.filterStatus;
+        refreshWorkspace();
+      });
+    });
+
+    // Priority filter
+    document.getElementById("priorityFilter").addEventListener("change", (e) => {
+      activePriorityFilter = e.target.value;
+      refreshWorkspace();
+    });
+
+    // Reset filters
+    document.getElementById("btnResetFilters").addEventListener("click", () => {
+      activeStatusFilter = "ALL";
+      activePriorityFilter = "ALL";
+      currentSearchQuery = "";
+      searchInput.value = "";
+      document.getElementById("priorityFilter").value = "ALL";
+      document.querySelectorAll(".filter-status-btn")[0].click();
+      refreshWorkspace();
+    });
+
+    // View toggle
+    document.getElementById("btnViewCards").addEventListener("click", function() {
+      currentView = "cards";
+      this.className = "view-toggle-btn p-1.5 rounded-md bg-surface-container-lowest text-primary shadow-sm";
+      document.getElementById("btnViewTable").className = "view-toggle-btn p-1.5 rounded-md text-on-surface-variant hover:text-on-surface";
+      refreshWorkspace();
+    });
+
+    document.getElementById("btnViewTable").addEventListener("click", function() {
+      currentView = "table";
+      this.className = "view-toggle-btn p-1.5 rounded-md bg-surface-container-lowest text-primary shadow-sm";
+      document.getElementById("btnViewCards").className = "view-toggle-btn p-1.5 rounded-md text-on-surface-variant hover:text-on-surface";
+      refreshWorkspace();
+    });
+
+    // Sync button (Simulates GET /api/incidents)
+    document.getElementById("btnSyncApi").addEventListener("click", () => {
+      showToast("GET /api/incidents sincronizado", "24 registros validados contra api-incident.onrender.com");
+      refreshWorkspace();
+    });
+
+    // Docs Modal
+    document.getElementById("btnOpenDocs").addEventListener("click", () => {
+      document.getElementById("apiDocsModal").classList.remove("hidden");
+      document.getElementById("apiDocsModal").classList.add("flex");
+    });
+    document.getElementById("btnCloseDocs").addEventListener("click", () => {
+      document.getElementById("apiDocsModal").classList.add("hidden");
+      document.getElementById("apiDocsModal").classList.remove("flex");
+    });
+    document.getElementById("btnDismissDocs").addEventListener("click", () => {
+      document.getElementById("apiDocsModal").classList.add("hidden");
+      document.getElementById("apiDocsModal").classList.remove("flex");
+    });
+
+    // Create Modal Handlers
+    const openCreateModal = () => {
+      document.getElementById("createModal").classList.remove("hidden");
+      document.getElementById("createModal").classList.add("flex");
+    };
+    document.getElementById("btnOpenCreate").addEventListener("click", openCreateModal);
+    document.getElementById("fabQuickAdd").addEventListener("click", openCreateModal);
+
+    const closeCreateModal = () => {
+      document.getElementById("createModal").classList.add("hidden");
+      document.getElementById("createModal").classList.remove("flex");
+    };
+    document.getElementById("btnCloseCreate").addEventListener("click", closeCreateModal);
+    document.getElementById("btnCancelCreate").addEventListener("click", closeCreateModal);
+
+    // Form POST /api/incidents
+    document.getElementById("createIncidentForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = document.getElementById("newTitle").value.trim();
+      const description = document.getElementById("newDescription").value.trim();
+      const priority = document.getElementById("newPriority").value;
+      const status = document.getElementById("newStatus").value;
+      const location = document.getElementById("newLocation").value.trim();
+
+      const newId = incidentStore.length > 0 ? Math.max(...incidentStore.map(i => i.id)) + 1 : 1;
+      const newTicket = {
+        id: newId,
+        ticketCode: `INC-${1045 + newId}`,
+        title,
+        description,
+        rejectionReason: "",
+        status,
+        priority,
+        createdAt: new Date().toISOString(),
+        location
+      };
+
+      incidentStore.unshift(newTicket);
+      refreshWorkspace();
+      closeCreateModal();
+      e.target.reset();
+      showToast("POST /api/incidents Exitoso", `Ticket #${newTicket.ticketCode} creado con ID: ${newId} (HTTP 201).`);
+    });
+
+    // Status Modal Close Handlers
+    const closeStatusModal = () => {
+      document.getElementById("statusModal").classList.add("hidden");
+      document.getElementById("statusModal").classList.remove("flex");
+    };
+    document.getElementById("btnCloseStatus").addEventListener("click", closeStatusModal);
+    document.getElementById("btnCancelStatus").addEventListener("click", closeStatusModal);
+
+    // Form PATCH /api/incidents/{id}/status
+    document.getElementById("patchStatusForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const id = parseInt(document.getElementById("patchIncidentId").value, 10);
+      const targetStatus = document.querySelector('input[name="targetStatus"]:checked').value;
+      const rejectionReason = document.getElementById("patchReason").value.trim();
+
+      const item = incidentStore.find(i => i.id === id);
+      if (item) {
+        item.status = targetStatus;
+        item.rejectionReason = rejectionReason;
+        refreshWorkspace();
+        closeStatusModal();
+        showToast("Estado Actualizado", `PATCH /api/incidents/${id}/status completado (HTTP 200).`);
+      }
+    });
+
+    // Detail Modal Close
+    const closeDetailModal = () => {
+      document.getElementById("detailModal").classList.add("hidden");
+      document.getElementById("detailModal").classList.remove("flex");
+    };
+    document.getElementById("btnCloseDetail").addEventListener("click", closeDetailModal);
+    document.getElementById("btnDismissDetail").addEventListener("click", closeDetailModal);
+
+    // Initial Render
+    refreshWorkspace();
+  });
+</script></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.03)]"><div class="w-full px-space-lg py-space-xl flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex flex-col sm:flex-row items-center gap-space-md text-center sm:text-left"><div class="flex items-center gap-space-sm"><img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Utplogonuevo.svg?utm_source=es.wikipedia.org&amp;utm_campaign=index&amp;utm_content=original" alt="UTP Logo" class="h-8 w-auto object-contain"><div class="flex flex-col text-left"><span class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">UTP Incidentes TI</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-none">Gestión Campus &amp; Infraestructura</span></div></div><span class="font-body-sm text-body-sm text-on-surface-variant">© 2025&nbsp; Plataforma de Infraestructura &amp; Gestión de Incidentes TI.</span></div><div class="flex flex-wrap items-center justify-center gap-space-lg"><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" data-path="mesa-de-ayuda-utp" href="#">Mesa de Ayuda UTP</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" data-path="soporte-de-red" href="#">Soporte de Red</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" data-path="estado-de-servidores" href="#">Estado de Servidores</a></div></div></footer>
+
+</body></html>

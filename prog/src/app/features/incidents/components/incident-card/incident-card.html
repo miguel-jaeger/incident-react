@@ -1,0 +1,75 @@
+<div class="relative flex flex-col justify-between rounded-xl bg-surface-container-lowest p-space-md shadow-sm hover:shadow-lg hover:-translate-y-1 hover:ring-1 hover:ring-surface-container-high transition-all duration-200">
+  <!-- Card Header -->
+  <div>
+    <div class="flex items-start justify-between gap-space-sm mb-1">
+      <div>
+        <span class="font-mono text-label-sm font-semibold text-primary">{{ incident | appTicketCode }}</span>
+        <h3
+          class="font-headline-sm text-headline-sm text-on-surface font-semibold hover:text-primary transition cursor-pointer"
+          (click)="viewDetail.emit(incident)"
+        >
+          {{ incident.title }}
+        </h3>
+      </div>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <app-status-badge [status]="incident.status"></app-status-badge>
+        <app-priority-badge [priority]="incident.priority"></app-priority-badge>
+      </div>
+    </div>
+
+    <!-- Body Description -->
+    <div class="mt-2 text-body-md font-body-md text-on-surface">
+      <span class="font-semibold text-on-surface-variant">Descripción:</span> {{ incident.description }}
+    </div>
+
+    <!-- Rejection reason / resolution notes if present -->
+    <div *ngIf="incident.message" class="mt-2.5 p-2 rounded-lg bg-surface-container-low text-body-sm font-body-sm flex items-start gap-1.5">
+      <span class="font-semibold text-on-surface-variant shrink-0">Razones del rechazo:</span>
+      <span class="text-on-surface break-words">{{ incident.message }}</span>
+    </div>
+
+    <!-- Footnote timestamp -->
+    <div class="mt-3 flex items-center justify-between text-label-sm font-label-sm text-outline font-mono">
+      <span class="flex items-center gap-1">
+        <span class="material-symbols-outlined text-xs">schedule</span>
+        Created: {{ incident.createdAt | appDate }}
+      </span>
+      <span class="text-on-surface-variant truncate max-w-[130px]" [title]="incident.location || 'Campus UTP'">
+        {{ incident.location || 'Campus UTP' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Bottom Endpoint Action Bar -->
+  <div class="mt-space-md pt-space-sm border-t border-surface-container flex items-center justify-between gap-space-xs">
+    <button
+      (click)="viewDetail.emit(incident)"
+      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 font-label-md text-label-md transition"
+      title="GET /api/incidents/{id}"
+      type="button"
+    >
+      <span class="material-symbols-outlined text-base">visibility</span>
+      <span>Detalle</span>
+    </button>
+
+    <button
+      (click)="editStatus.emit(incident)"
+      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 font-label-md text-label-md transition"
+      title="PATCH /api/incidents/{id}/status"
+      type="button"
+    >
+      <span class="material-symbols-outlined text-base">edit</span>
+      <span>Editar Estado</span>
+    </button>
+
+    <button
+      (click)="delete.emit(incident)"
+      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary-container/10 font-label-md text-label-md transition"
+      title="DELETE /api/incidents/{id}"
+      type="button"
+    >
+      <span class="material-symbols-outlined text-base">delete</span>
+      <span>Eliminar</span>
+    </button>
+  </div>
+</div>

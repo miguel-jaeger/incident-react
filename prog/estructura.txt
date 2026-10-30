@@ -1,0 +1,62 @@
+./
+├── angular.json
+├── estructura.txt
+├── package.json
+├── public/
+│   └── favicon.ico
+├── README.md
+├── src/
+│   ├── app/
+│   │   ├── core/                          # Capa de dominio (sin UI)
+│   │   │   ├── interceptors/
+│   │   │   │   └── auth.interceptor.ts
+│   │   │   ├── models/
+│   │   │   │   ├── auth.model.ts
+│   │   │   │   └── incident.model.ts
+│   │   │   └── services/
+│   │   │       ├── api-incident.service.ts
+│   │   │       ├── auth.service.ts
+│   │   │       └── toast.service.ts
+│   │   ├── features/                      # Módulos de dominio (lazy)
+│   │   │   └── incidents/
+│   │   │       ├── components/            # Solo presentación (input/output)
+│   │   │       │   ├── api-docs-modal/
+│   │   │       │   ├── create-incident-modal/
+│   │   │       │   ├── incident-card/
+│   │   │       │   ├── incident-detail-modal/
+│   │   │       │   ├── incident-filters/
+│   │   │       │   ├── incident-table/
+│   │   │       │   ├── kpi-deck/
+│   │   │       │   └── status-modal/
+│   │   │       ├── pages/
+│   │   │       │   └── incident-dashboard/
+│   │   │       ├── utils/                 # Lógica pura testable
+│   │   │       │   └── incident-calculations.ts
+│   │   │       └── incidents.module.ts    # Chunk diferido
+│   │   ├── shared/                        # UI reutilizable + pipes
+│   │   │   ├── components/
+│   │   │   │   ├── empty-state/
+│   │   │   │   ├── kpi-card/
+│   │   │   │   ├── loading-spinner/
+│   │   │   │   ├── modal/
+│   │   │   │   ├── priority-badge/
+│   │   │   │   ├── status-badge/
+│   │   │   │   └── toast/                 # (host global, declarado en AppModule)
+│   │   │   ├── pipes/
+│   │   │   │   ├── app-date.pipe.ts
+│   │   │   │   └── ticket-code.pipe.ts
+│   │   │   └── shared-module.ts
+│   │   ├── app.css
+│   │   ├── app.html                       # Shell: header + outlet + footer + toast
+│   │   ├── app-module.ts
+│   │   ├── app-routing-module.ts          # Lazy load de features
+│   │   ├── app.spec.ts
+│   │   └── app.ts
+│   ├── index.html
+│   ├── main.ts
+│   └── styles.css
+├── tsconfig.app.json
+├── tsconfig.json
+└── tsconfig.spec.json
+
+13 directories, 26 files
