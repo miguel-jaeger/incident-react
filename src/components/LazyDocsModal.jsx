@@ -1,5 +1,5 @@
 import React from 'react';
-export default function LazyDocsModal({auth, base, incidents, local, me, setShowDocsModal, showDocsModal, stats, total, users}) { return <>
+export default function LazyDocsModal({setShowDocsModal, showDocsModal}) { return <>
       {/* Modal: Docs */}
       {showDocsModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">

@@ -1,5 +1,7 @@
-import React from 'react';
-export default function LazyRegisterModal({handleRegisterSubmit, label, registerError, registerForm, setRegisterForm, setShowLoginModal, setShowRegisterModal, showRegisterModal, username, users, value}) { return <>
+import React, { useState } from 'react';
+export default function LazyRegisterModal({handleRegisterSubmit, registerError, registerForm: initialValue, setShowLoginModal, setShowRegisterModal, showRegisterModal}) {
+  const [registerForm, setRegisterForm] = useState(initialValue);
+  return <>
       {/* Modal: Registro de Usuario (POST /api/users) */}
       {showRegisterModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
@@ -19,7 +21,7 @@ export default function LazyRegisterModal({handleRegisterSubmit, label, register
               </button>
             </div>
 
-            <form onSubmit={handleRegisterSubmit} className="py-4 space-y-3">
+            <form onSubmit={(event) => handleRegisterSubmit(event, registerForm)} className="py-4 space-y-3">
               {registerError && (
                 <div className="p-3 rounded-lg bg-red-100 text-red-700 text-xs font-semibold">{registerError}</div>
               )}

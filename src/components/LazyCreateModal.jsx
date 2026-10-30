@@ -1,5 +1,7 @@
-import React from 'react';
-export default function LazyCreateModal({handleCreateSubmit, label, newIncident, setNewIncident, setShowCreateModal, showCreateModal, value}) { return <>
+import React, { useState } from 'react';
+export default function LazyCreateModal({handleCreateSubmit, newIncident: initialValue, setShowCreateModal, showCreateModal}) {
+  const [newIncident, setNewIncident] = useState(initialValue);
+  return <>
       {/* Modal: Crear Incidente */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
@@ -19,7 +21,7 @@ export default function LazyCreateModal({handleCreateSubmit, label, newIncident,
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="py-4 space-y-3">
+            <form onSubmit={(event) => handleCreateSubmit(event, newIncident)} className="py-4 space-y-3">
               <div>
                 <label className="block text-xs font-semibold text-on-surface mb-1">Título del Incidente <span className="text-primary">*</span></label>
                 <input

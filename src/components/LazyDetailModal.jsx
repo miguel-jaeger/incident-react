@@ -1,5 +1,5 @@
 import React from 'react';
-export default function LazyDetailModal({CATEGORY_COLORS, ContentSkeleton, base, detailLoading, priorityLabel, selectedIncident, setShowDetailModal, showDetailModal, statusLabel}) { return <>
+export default function LazyDetailModal({CATEGORY_COLORS, ContentSkeleton, detailLoading, priorityLabel, selectedIncident, setShowDetailModal, showDetailModal, statusLabel}) { return <>
       {/* Modal: Detalle */}
       {showDetailModal && selectedIncident && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">

@@ -1,5 +1,7 @@
-import React from 'react';
-export default function LazyPasswordModal({handlePasswordSubmit, isSelf, label, passwordError, passwordForm, passwordInfo, passwordSaving, passwordTarget, setPasswordForm, setShowPasswordModal, showPasswordModal, username, users, value}) { return <>
+import React, { useState } from 'react';
+export default function LazyPasswordModal({handlePasswordSubmit, passwordError, passwordForm: initialValue, passwordInfo, passwordSaving, passwordTarget, setShowPasswordModal, showPasswordModal}) {
+  const [passwordForm, setPasswordForm] = useState(initialValue);
+  return <>
       {/* Modal: Cambio de Contraseña (PATCH /api/users/{id}/password) */}
       {showPasswordModal && passwordTarget && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
@@ -21,7 +23,7 @@ export default function LazyPasswordModal({handlePasswordSubmit, isSelf, label, 
               </button>
             </div>
 
-            <form onSubmit={handlePasswordSubmit} className="py-4 space-y-3">
+            <form onSubmit={(event) => handlePasswordSubmit(event, passwordForm)} className="py-4 space-y-3">
               {passwordInfo && (
                 <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs">
                   {passwordInfo}

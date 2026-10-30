@@ -1,5 +1,7 @@
-import React from 'react';
-export default function LazyLoginModal({handleLoginSubmit, label, loginError, loginForm, setLoginError, setLoginForm, setShowLoginModal, setShowRegisterModal, showLoginModal, username, value}) { return <>
+import React, { useState } from 'react';
+export default function LazyLoginModal({handleLoginSubmit, loginError, loginForm: initialValue, setLoginError, setShowLoginModal, setShowRegisterModal, showLoginModal}) {
+  const [loginForm, setLoginForm] = useState(initialValue);
+  return <>
       {/* Modal: Login */}
       {showLoginModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
@@ -19,7 +21,7 @@ export default function LazyLoginModal({handleLoginSubmit, label, loginError, lo
               </button>
             </div>
 
-            <form onSubmit={handleLoginSubmit} className="py-4 space-y-4">
+            <form onSubmit={(event) => handleLoginSubmit(event, loginForm)} className="py-4 space-y-4">
               {loginError && (
                 <div className="p-3 rounded-lg bg-red-100 text-red-700 text-xs font-semibold">{loginError}</div>
               )}

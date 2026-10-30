@@ -1,5 +1,7 @@
-import React from 'react';
-export default function LazyStatusModal({active, base, handlePatchSubmit, label, patchStatusData, setPatchStatusData, setShowStatusModal, showStatusModal, value}) { return <>
+import React, { useState } from 'react';
+export default function LazyStatusModal({handlePatchSubmit, patchStatusData: initialValue, setShowStatusModal, showStatusModal}) {
+  const [patchStatusData, setPatchStatusData] = useState(initialValue);
+  return <>
       {/* Modal: Editar Estado */}
       {showStatusModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
@@ -19,7 +21,7 @@ export default function LazyStatusModal({active, base, handlePatchSubmit, label,
               </button>
             </div>
 
-            <form onSubmit={handlePatchSubmit} className="py-4 space-y-4">
+            <form onSubmit={(event) => handlePatchSubmit(event, patchStatusData)} className="py-4 space-y-4">
               <div>
                 <span className="block text-xs font-semibold text-on-surface mb-2">Seleccionar Nuevo Estado:</span>
                 <div className="grid grid-cols-2 gap-3">

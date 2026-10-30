@@ -1,5 +1,5 @@
 import React from 'react';
-export default function LazyProfileModal({ContentSkeleton, ROLE_LABELS, ROLE_STYLES, base, currentHost, handleLogout, handleOpenPasswordModal, isAdmin, profileError, profileLoading, profileUser, setActiveView, setShowProfileModal, showProfileModal, username, users}) { return <>
+export default function LazyProfileModal({ContentSkeleton, ROLE_LABELS, ROLE_STYLES, currentHost, handleLogout, handleOpenPasswordModal, isAdmin, profileError, profileLoading, profileUser, setActiveView, setShowProfileModal, showProfileModal}) { return <>
       {/* Modal: Mi Perfil */}
       {showProfileModal && profileUser && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">

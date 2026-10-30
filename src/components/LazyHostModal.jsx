@@ -1,5 +1,7 @@
-import React from 'react';
-export default function LazyHostModal({DEFAULT_LOCAL_URL, DEFAULT_RENDER_URL, base, currentHost, customHostInput, handleSaveHost, isOnline, label, setCustomHostInput, setShowHostModal, showHostModal, value}) { return <>
+import React, { useState } from 'react';
+export default function LazyHostModal({DEFAULT_LOCAL_URL, DEFAULT_RENDER_URL, currentHost, customHostInput: initialValue, handleSaveHost, isOnline, setShowHostModal, showHostModal}) {
+  const [customHostInput, setCustomHostInput] = useState(initialValue);
+  return <>
       {/* Modal: Cambiar Servidor */}
       {showHostModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
@@ -30,7 +32,7 @@ export default function LazyHostModal({DEFAULT_LOCAL_URL, DEFAULT_RENDER_URL, ba
             </div>
 
             <div className="pt-2 border-t border-surface-container flex justify-end gap-2">
-              <button onClick={handleSaveHost} className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-white text-xs font-bold">Guardar y Reconectar</button>
+              <button onClick={() => handleSaveHost(customHostInput)} className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-white text-xs font-bold">Guardar y Reconectar</button>
             </div>
           </div>
         </div>
