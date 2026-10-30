@@ -36,16 +36,16 @@ export default {
         "error-container": "#ffdad6"
       },
       fontFamily: {
-        display: ["Montserrat", "sans-serif"],
-        "headline-lg": ["Montserrat", "sans-serif"],
-        "headline-md": ["Montserrat", "sans-serif"],
-        "headline-sm": ["Montserrat", "sans-serif"],
-        "body-lg": ["Inter", "sans-serif"],
-        "body-md": ["Inter", "sans-serif"],
-        "body-sm": ["Inter", "sans-serif"],
-        "label-lg": ["Inter", "sans-serif"],
-        "label-md": ["Inter", "sans-serif"],
-        "label-sm": ["Inter", "sans-serif"]
+        display: ["Manrope", "sans-serif"],
+        "headline-lg": ["Manrope", "sans-serif"],
+        "headline-md": ["Manrope", "sans-serif"],
+        "headline-sm": ["Manrope", "sans-serif"],
+        "body-lg": ["Manrope", "sans-serif"],
+        "body-md": ["Manrope", "sans-serif"],
+        "body-sm": ["Manrope", "sans-serif"],
+        "label-lg": ["Manrope", "sans-serif"],
+        "label-md": ["Manrope", "sans-serif"],
+        "label-sm": ["Manrope", "sans-serif"]
       }
     }
   },

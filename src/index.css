@@ -15,3 +15,126 @@
 ::-webkit-scrollbar {
   display: none;
 }
+
+@layer components {
+  .skeleton {
+    background-color: currentColor;
+    opacity: 0.12;
+    animation: skeleton-pulse 1.4s ease-in-out infinite alternate;
+  }
+
+  .incident-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  main, main section, .bento-incident > div {
+    min-width: 0;
+  }
+
+  [role='dialog'], .fixed.inset-0 > .relative {
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+  }
+
+  textarea {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 639px) {
+    .bento-metric > div:nth-child(3) {
+      flex-wrap: wrap;
+    }
+
+    .fixed.inset-0 > .relative {
+      padding: 1rem;
+    }
+  }
+
+  @keyframes skeleton-pulse {
+    to { opacity: 0.22; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton { animation: none; }
+  }
+
+  .bento-metric {
+    @apply flex min-w-0 flex-col gap-3;
+    box-shadow: 0 4px 20px rgb(17 28 45 / 3%);
+  }
+
+  .bento-metric > div:first-child {
+    @apply gap-3;
+  }
+
+  .bento-metric > div:first-child > .material-symbols-outlined {
+    @apply rounded-xl p-2;
+  }
+
+  .bento-metric > div:nth-child(3) {
+    @apply mt-auto gap-3;
+  }
+
+  .bento-metric > div:nth-child(3) > span:first-child {
+    @apply text-[14px] line-clamp-2 break-words;
+  }
+
+  .bento-metric > div:nth-child(3) > span:last-child {
+    @apply shrink-0;
+  }
+
+  .bento-metric:first-child {
+    @apply bg-primary text-white sm:col-span-2;
+  }
+
+  .bento-metric:first-child > div,
+  .bento-metric:first-child > div > span {
+    color: inherit;
+  }
+
+  .bento-metric:first-child > div:first-child > .material-symbols-outlined {
+    @apply bg-white/10;
+  }
+
+  .bento-metric:first-child .font-display {
+    @apply text-6xl tracking-tight;
+  }
+
+  .bento-metric:first-child > div:nth-child(2) {
+    @apply flex-wrap;
+  }
+
+  .bento-metric:first-child > div:last-child {
+    @apply hidden;
+  }
+
+  .bento-incident {
+    box-shadow: 0 4px 20px rgb(17 28 45 / 3%);
+  }
+
+  .bento-incident:hover {
+    @apply border-outline-variant;
+    box-shadow: 0 8px 28px rgb(17 28 45 / 7%);
+  }
+
+  .bento-incident h3 {
+    @apply tracking-tight leading-7;
+  }
+
+  @media (min-width: 1024px) {
+    .bento-metric {
+      @apply col-span-2;
+    }
+
+    .bento-metric:first-child {
+      @apply col-span-2 row-span-2 justify-between;
+    }
+  }
+}

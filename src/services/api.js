@@ -11,6 +11,15 @@ const COLD_START_TIMEOUT = 45000;
 const RETRY_DELAY = 3000;
 const WARM_WINDOW = 10 * 60 * 1000;
 
+const pendingReads = new Map();
+export function cancelRead(path) {
+  pendingReads.get(`${API_BASE_URL}:${path}`)?.abort();
+}
+export function cancelPendingReads() {
+  for (const controller of pendingReads.values()) controller.abort();
+  pendingReads.clear();
+}
+
 let apiWarm = false;
 let lastSuccessAt = 0;
 let lastStatusKey = null;
@@ -88,6 +97,8 @@ export function getInitialApiUrl() {
 export let API_BASE_URL = getInitialApiUrl();
 
 export function setApiBaseUrl(url) {
+  cancelPendingReads();
+  apiWarm = false;
   API_BASE_URL = url.replace(/\/$/, "");
   writeStorage("utp_api_url", API_BASE_URL);
 }
@@ -103,17 +114,20 @@ function setAuthToken(token) {
 }
 
 // Una sola petición HTTP con timeout y parseo del cuerpo.
-async function requestOnce(path, { method, body, timeout }) {
+async function requestOnce(path, { method, body, timeout, signal, baseUrl }) {
   const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
   const timer = controller ? setTimeout(() => controller.abort(), timeout) : null;
 
+  const abort = () => controller?.abort();
+  signal?.addEventListener("abort", abort, { once: true });
+  if (signal?.aborted) abort();
   try {
     const headers = { Accept: "application/json" };
     const token = getAuthToken();
     if (token) headers.Authorization = `Bearer ${token}`;
     if (body !== undefined) headers["Content-Type"] = "application/json";
 
-    const resp = await fetch(`${API_BASE_URL}${path}`, {
+    const resp = await fetch(`${baseUrl}${path}`, {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
@@ -142,6 +156,7 @@ async function requestOnce(path, { method, body, timeout }) {
 
     return data;
   } catch (err) {
+    if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
     if (err.name === "AbortError") {
       const timeoutError = new Error("Tiempo de espera agotado al conectar con la API");
       timeoutError.isTimeout = true;
@@ -149,13 +164,25 @@ async function requestOnce(path, { method, body, timeout }) {
     }
     throw err;
   } finally {
+    signal?.removeEventListener("abort", abort);
     if (timer) clearTimeout(timer);
   }
 }
 
 // Cliente HTTP centralizado. Reintenta solo lecturas (GET) para tolerar el
 // arranque en frío de Render sin duplicar operaciones de escritura.
-async function request(path, { method = "GET", body, timeout } = {}) {
+async function request(path, options = {}) {
+  const controller = new AbortController();
+  const key = `${API_BASE_URL}:${path}`;
+  if (!options.method || options.method === 'GET') {
+    pendingReads.get(key)?.abort();
+    pendingReads.set(key, controller);
+  }
+  try { return await performRequest(path, { ...options, signal: controller.signal, baseUrl: API_BASE_URL }); }
+  finally { if (pendingReads.get(key) === controller) pendingReads.delete(key); }
+}
+
+async function performRequest(path, { method = "GET", body, timeout, signal, baseUrl } = {}) {
   const maxRetries = method === "GET" ? 1 : 0;
 
   if (!isApiWarm()) {
@@ -169,12 +196,14 @@ async function request(path, { method = "GET", body, timeout } = {}) {
     const attemptTimeout = timeout || (method === "GET" && !isApiWarm() ? COLD_START_TIMEOUT : REQUEST_TIMEOUT);
 
     try {
-      const data = await requestOnce(path, { method, body, timeout: attemptTimeout });
+      if (signal.aborted) throw new DOMException("Cancelled", "AbortError");
+      const data = await requestOnce(path, { method, body, timeout: attemptTimeout, signal, baseUrl });
       apiWarm = true;
       lastSuccessAt = Date.now();
       notifyApiStatus("online");
       return data;
     } catch (err) {
+      if (signal.aborted) throw err;
       apiWarm = false;
       const canRetry = attempt < maxRetries && isRetryableError(err);
 
@@ -183,7 +212,12 @@ async function request(path, { method = "GET", body, timeout } = {}) {
           "waking",
           "El servidor de Render está despertando. Esto puede tardar hasta 50 segundos; reintentando..."
         );
-        await sleep(RETRY_DELAY);
+        await new Promise((resolve, reject) => {
+          const abort = () => { clearTimeout(timer); reject(new DOMException('Cancelled', 'AbortError')); };
+          const timer = setTimeout(() => { signal.removeEventListener('abort', abort); resolve(); }, RETRY_DELAY);
+          signal.addEventListener('abort', abort, { once: true });
+          if (signal.aborted) abort();
+        });
         continue;
       }
 
