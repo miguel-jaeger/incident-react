@@ -1,4 +1,24 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+
+import { Header } from './components/layout/Header';
+import { Footer } from './components/layout/Footer';
+import { ApiBanner } from './components/incidents/ApiBanner';
+import { IncidentMetrics } from './components/incidents/IncidentMetrics';
+import { IncidentFilters } from './components/incidents/IncidentFilters';
+import { IncidentList } from './components/incidents/IncidentList';
+import { UsersPanel } from './components/users/UsersPanel';
+import { Toast } from './components/feedback/Toast';
+import { ProfileModal } from './components/modals/ProfileModal';
+import { PasswordModal } from './components/modals/PasswordModal';
+import { LoginModal } from './components/modals/LoginModal';
+import { RegisterModal } from './components/modals/RegisterModal';
+import { CreateIncidentModal } from './components/modals/CreateIncidentModal';
+import { StatusModal } from './components/modals/StatusModal';
+import { DetailModal } from './components/modals/DetailModal';
+import { UserDetailModal } from './components/modals/UserDetailModal';
+import { DocsModal } from './components/modals/DocsModal';
+import { HostModal } from './components/modals/HostModal';
+import { CATEGORY_COLORS, ROLE_STYLES, ROLE_LABELS, statusLabel, priorityLabel, normalizeStatus, normalizePriority } from './lib/labels';
 import {
   getIncidents,
   getStats,
@@ -29,57 +49,6 @@ import {
   DEFAULT_RENDER_URL
 } from './services/api';
 
-// Helper de estilos por categoría
-const CATEGORY_COLORS = {
-  Redes: 'bg-sky-100 text-sky-800 border-sky-200',
-  Hardware: 'bg-amber-100 text-amber-800 border-amber-200',
-  Software: 'bg-purple-100 text-purple-800 border-purple-200',
-  Seguridad: 'bg-rose-100 text-rose-800 border-rose-200',
-  Infraestructura: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  General: 'bg-slate-100 text-slate-700 border-slate-200',
-};
-
-const ROLE_STYLES = {
-  ADMIN: 'bg-primary/10 text-primary border-primary/30',
-  SUPERVISOR: 'bg-amber-100 text-amber-800 border-amber-200',
-  OPERATOR: 'bg-sky-100 text-sky-800 border-sky-200',
-  SUPPORT: 'bg-violet-100 text-violet-800 border-violet-200',
-};
-
-const ROLE_LABELS = {
-  ADMIN: 'Administrador',
-  SUPERVISOR: 'Supervisor',
-  OPERATOR: 'Operador',
-  SUPPORT: 'Soporte',
-};
-
-// El backend mantiene datos históricos con OPEN/CLOSED y nuevos con Active/Inactive.
-const ACTIVE_STATUSES = ['ACTIVE', 'OPEN', 'IN_PROGRESS', 'EN_PROGRESO'];
-
-function normalizeStatus(status) {
-  return ACTIVE_STATUSES.includes(String(status || '').toUpperCase()) ? 'Active' : 'Inactive';
-}
-
-function normalizePriority(priority) {
-  const value = String(priority || 'Low').toUpperCase();
-  if (value === 'CRITICAL' || value === 'CRITICA' || value === 'CRÍTICA') return 'High';
-  if (value === 'ALTA') return 'High';
-  if (value === 'MEDIA') return 'Medium';
-  if (value === 'BAJA') return 'Low';
-  return value.charAt(0) + value.slice(1).toLowerCase();
-}
-
-const STATUS_LABELS = { Active: 'Activo', Inactive: 'Inactivo' };
-const PRIORITY_LABELS = { High: 'Alta', Medium: 'Media', Low: 'Baja' };
-
-function statusLabel(status) {
-  return STATUS_LABELS[status] || status || '—';
-}
-
-function priorityLabel(priority) {
-  return PRIORITY_LABELS[priority] || priority || '—';
-}
-
 export default function App() {
   // Estado principal
   const [incidents, setIncidents] = useState([]);
@@ -87,7 +56,7 @@ export default function App() {
   const [isOnline, setIsOnline] = useState(true);
   const [apiStatus, setApiStatus] = useState({ status: 'connecting', message: 'Conectando con el servidor...' });
   const [currentHost, setCurrentHost] = useState(API_BASE_URL);
-  const [view, setView] = useState('cards'); // 'cards' | 'table'
+  const [view, setView] = useState('table'); // 'cards' | 'table'
   const [activeView, setActiveView] = useState('incidents'); // 'incidents' | 'users'
 
   // Filtros
@@ -749,1745 +718,209 @@ export default function App() {
   }, [incidents, statusFilter, priorityFilter, categoryFilter, searchQuery]);
 
   return (
-    <div className="bg-background min-h-screen flex flex-col justify-between font-body-md text-on-surface antialiased">
-      {/* Top Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-        <div className="h-16 w-full px-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <img alt="UTP" className="h-9 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/5/50/Utplogonuevo.svg" />
-            <div className="flex flex-col">
-              <span className="font-headline-sm text-base text-primary tracking-tight font-bold">UTP Incidentes TI</span>
-              <span className="font-label-sm text-xs text-on-surface-variant leading-none">Gestión Campus &amp; Infraestructura (React)</span>
-            </div>
-          </div>
-
-          {/* View Switcher */}
-          <nav className="flex items-center bg-surface-container-low rounded-lg p-1 border border-surface-container">
-            <button
-              onClick={() => setActiveView('incidents')}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs transition flex items-center gap-1 ${activeView === 'incidents' ? 'bg-surface-container-lowest text-primary font-semibold shadow-sm' : 'font-medium text-on-surface-variant hover:text-on-surface'}`}
-              title="Incidentes"
-            >
-              <span className="material-symbols-outlined text-base">confirmation_number</span>
-              <span className="hidden md:inline">Incidentes</span>
-            </button>
-            {isAdmin && (
-              <button
-                onClick={() => setActiveView('users')}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs transition flex items-center gap-1 ${activeView === 'users' ? 'bg-surface-container-lowest text-primary font-semibold shadow-sm' : 'font-medium text-on-surface-variant hover:text-on-surface'}`}
-                title="Usuarios"
-              >
-                <span className="material-symbols-outlined text-base">manage_accounts</span>
-                <span className="hidden md:inline">Usuarios</span>
-              </button>
-            )}
-          </nav>
-
-          {/* Host Indicator */}
-          <div className="hidden xl:flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-lg border border-surface-container">
-            <span className={`w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`}></span>
-            <span className="font-mono text-xs font-medium text-on-surface-variant">
-              {currentHost.replace(/^https?:\/\//, '')}
-            </span>
-            <button onClick={() => setShowHostModal(true)} className="text-xs text-tertiary hover:underline ml-1 font-semibold flex items-center gap-0.5">
-              <span className="material-symbols-outlined text-sm">swap_horiz</span> Servidor
-            </button>
-          </div>
-
-          {/* Right Header: User profile */}
-          <div className="flex items-center gap-3">
-            <button onClick={loadData} title="Sincronizar" className="p-2 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition">
-              <span className="material-symbols-outlined text-xl">sync</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleOpenProfile}
-              title={user ? 'Ver mi perfil' : 'Iniciar sesión'}
-              className="flex items-center gap-2 pl-2 border-l border-surface-container cursor-pointer hover:opacity-90 transition bg-transparent"
-            >
-              <div className="hidden sm:flex flex-col text-right">
-                <span className="font-label-sm text-xs text-on-surface font-semibold">{user ? user.name : 'Iniciar Sesión'}</span>
-                <span className="font-label-sm text-[10px] text-outline leading-none">{user ? `Rol: ${ROLE_LABELS[String(user.role || '').toUpperCase()] || user.role || 'Usuario'}` : 'No autenticado'}</span>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
-                {user ? user.name.charAt(0).toUpperCase() : '?'}
-              </div>
-            </button>
-
-            {user && (
-              <button onClick={handleLogout} title="Cerrar sesión" className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition">
-                <span className="material-symbols-outlined text-lg">logout</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Main Workspace */}
-      <main className="w-full pt-20 px-6 max-w-7xl mx-auto flex-1 pb-16">
-        {apiStatus.status !== 'online' && (
-          <div className={`mb-4 rounded-xl border px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 shadow-sm ${
-            apiStatus.status === 'offline'
-              ? 'bg-red-50 border-red-200'
-              : 'bg-amber-50 border-amber-200'
-          }`}>
-            <div className={`p-2 rounded-lg flex items-center justify-center ${
-              apiStatus.status === 'offline' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
-            }`}>
-              <span className="material-symbols-outlined text-xl">
-                {apiStatus.status === 'offline' ? 'cloud_off' : 'hourglass_top'}
-              </span>
-            </div>
-            <div className="flex-1">
-              <p className={`text-sm font-bold ${apiStatus.status === 'offline' ? 'text-red-800' : 'text-amber-800'}`}>
-                {apiStatus.status === 'offline'
-                  ? 'Sin conexión con el backend'
-                  : apiStatus.status === 'waking'
-                    ? 'Despertando el servidor de Render'
-                    : 'Conectando con el servidor'}
-              </p>
-              <p className={`text-xs mt-0.5 ${apiStatus.status === 'offline' ? 'text-red-700' : 'text-amber-700'}`}>
-                {apiStatus.message || (apiStatus.status === 'offline'
-                  ? 'Verifica que el backend esté activo o vuelve a intentarlo.'
-                  : 'El plan gratuito de Render suspende el backend tras un periodo de inactividad.')}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={loadData}
-              className={`px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition ${
-                apiStatus.status === 'offline'
-                  ? 'bg-red-600 hover:bg-red-700 text-white'
-                  : 'bg-amber-600 hover:bg-amber-700 text-white'
-              }`}
-            >
-              <span className="material-symbols-outlined text-base">refresh</span>
-              Reintentar
-            </button>
-          </div>
-        )}
+    <div className="bg-[#F8FAFC] min-h-screen flex flex-col font-body-md text-slate-800 antialiased">
+      <Header
+        activeView={activeView}
+        handleLogout={handleLogout}
+        handleOpenProfile={handleOpenProfile}
+        isAdmin={isAdmin}
+        isOnline={isOnline}
+        loadData={loadData}
+        setActiveView={setActiveView}
+        setShowDocsModal={setShowDocsModal}
+        setShowHostModal={setShowHostModal}
+        user={user}
+      />
+      <main className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1">
+        <ApiBanner
+          apiStatus={apiStatus}
+          loadData={loadData}
+        />
         <div className="flex flex-col w-full">
           <div className={activeView === 'incidents' ? 'contents' : 'hidden'}>
-          {/* Top Status & Docs Bar */}
-          <section className="w-full pt-2 pb-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-              <div className="flex items-center gap-2 text-xs text-on-surface-variant">
-                <span className="flex items-center gap-1 font-semibold text-primary">
-                  <span className="material-symbols-outlined text-sm">terminal</span>
-                  Incidentes
-                </span>
-                <span>/</span>
-                <span className="text-on-surface font-medium">Mesa Operativa Campus</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${isOnline ? 'bg-emerald-500/10 text-emerald-700' : 'bg-red-500/10 text-red-700'}`}>
-                  <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500 animate-ping' : 'bg-red-500'}`}></span>
-                  <span>{isOnline ? 'Servicio en línea' : 'Servicio desconectado'}</span>
-                </div>
-                <button
-                  onClick={() => setShowDocsModal(true)}
-                  className="flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-primary shadow-sm hover:shadow transition text-xs font-semibold"
-                >
-                  <span className="material-symbols-outlined text-sm">code</span>
-                  <span>Documentación</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Metric Bento Grid (5 Cards) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {/* Total Tickets */}
-              <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Total Incidentes</span>
-                  <span className="p-1 rounded-lg bg-surface-container text-tertiary material-symbols-outlined text-base">dataset</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-on-surface font-bold">{stats.total || incidents.length}</span>
-                  <span className="text-xs text-emerald-600 font-medium">Métricas actualizadas</span>
-                </div>
-                <div className="mt-2 text-xs text-on-surface-variant flex items-center justify-between">
-                  <span>Sincronizado con la base de datos</span>
-                  <span className="font-semibold text-on-surface">En línea</span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-tertiary to-tertiary-container"></div>
-              </div>
-
-              {/* Active */}
-              <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Activos / En Atención</span>
-                  <span className="p-1 rounded-lg bg-emerald-100 text-emerald-700 material-symbols-outlined text-base">radio_button_checked</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-emerald-700 font-bold">{stats.active || 0}</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-xs font-bold">Activo</span>
-                </div>
-                <div className="mt-2 text-xs text-on-surface-variant flex items-center justify-between">
-                  <span>Requieren acción técnica</span>
-                  <span className="font-semibold text-emerald-700">
-                    {stats.total > 0 ? Math.round((stats.active / stats.total) * 100) : 0}%
-                  </span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500"></div>
-              </div>
-
-              {/* Inactive */}
-              <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Inactivos / Cerrados</span>
-                  <span className="p-1 rounded-lg bg-surface-container text-outline material-symbols-outlined text-base">task_alt</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-on-surface font-bold">{stats.inactive || 0}</span>
-                  <span className="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-xs font-bold">Inactivo</span>
-                </div>
-                <div className="mt-2 text-xs text-on-surface-variant flex items-center justify-between">
-                  <span>Tickets solucionados</span>
-                  <span className="font-semibold text-on-surface">
-                    {stats.total > 0 ? Math.round((stats.inactive / stats.total) * 100) : 0}%
-                  </span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-outline"></div>
-              </div>
-
-              {/* Critical / High Priority */}
-              <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Prioridad Alta</span>
-                  <span className="p-1 rounded-lg bg-red-100 text-primary material-symbols-outlined text-base">warning</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-primary font-bold">
-                    {(stats.bySeverity && (stats.bySeverity.High || stats.bySeverity.HIGH)) || incidents.filter(i => (i.priority || '').toUpperCase() === 'HIGH').length}
-                  </span>
-                  <span className="px-2 py-0.5 rounded bg-primary-container text-on-primary text-xs font-bold">Críticos</span>
-                </div>
-                <div className="mt-2 text-xs text-on-surface-variant flex items-center justify-between">
-                  <span>SLA Campus &lt; 2h</span>
-                  <span className="font-semibold text-primary">Atención UTP</span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary-container"></div>
-              </div>
-
-              {/* Campus SLA */}
-              <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Tiempo Promedio</span>
-                  <span className="p-1 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant material-symbols-outlined text-base">timer</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-on-surface font-bold">1.2<span className="text-lg font-normal">h</span></span>
-                  <span className="text-xs text-emerald-600 font-medium">-25% vs meta</span>
-                </div>
-                <div className="mt-2 text-xs text-on-surface-variant flex items-center justify-between">
-                  <span>Resolución de incidentes</span>
-                  <span className="font-semibold text-tertiary">Óptimo NOC</span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-tertiary"></div>
-              </div>
-            </div>
-
-            {/* Interactive Category Pills Bar */}
-            <div className="mt-4 p-3 rounded-xl bg-surface-container-lowest border border-surface-container flex flex-wrap items-center justify-between gap-3 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant">
-                <span className="material-symbols-outlined text-sm text-primary">category</span>
-                <span>Métricas por Categoría:</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {Object.entries(stats.byCategory || {}).map(([cat, count]) => (
-                  <button
-                    key={cat}
-                    onClick={() => setCategoryFilter(categoryFilter === cat ? 'ALL' : cat)}
-                    className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition flex items-center gap-1.5 cursor-pointer ${
-                      categoryFilter === cat
-                        ? 'bg-primary text-white border-primary shadow-sm'
-                        : 'bg-surface-container-low hover:bg-surface-container border-surface-container text-on-surface'
-                    }`}
-                  >
-                    <span>{cat}</span>
-                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${categoryFilter === cat ? 'bg-white text-primary' : 'bg-primary/10 text-primary'}`}>
-                      {count}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Controls & Filters Bar */}
-          <section className="w-full mb-4">
-            <div className="rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-              <div className="flex-1 flex flex-col sm:flex-row items-center gap-3">
-                {/* Search */}
-                <div className="relative w-full sm:max-w-xs">
-                  <span className="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-lg">search</span>
-                  <input
-                    type="text"
-                    placeholder="Buscar por ID, título, aula..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-8 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 border border-surface-container"
-                  />
-                  {searchQuery && (
-                    <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-2.5 text-on-surface-variant hover:text-on-surface">
-                      <span className="material-symbols-outlined text-base">close</span>
-                    </button>
-                  )}
-                </div>
-
-                {/* Status Toggle */}
-                <div className="w-full sm:w-auto flex items-center bg-surface-container-low rounded-lg p-1 border border-surface-container">
-                  {['ALL', 'Active', 'Inactive'].map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setStatusFilter(s)}
-                      className={`px-3 py-1.5 rounded-md text-xs transition ${
-                        statusFilter === s
-                          ? 'font-semibold bg-surface-container-lowest text-on-surface shadow-sm'
-                          : 'font-medium text-on-surface-variant hover:text-on-surface'
-                      }`}
-                    >
-                      {s === 'ALL' ? 'Todos' : s === 'Active' ? 'Activos' : 'Inactivos'}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Category Filter */}
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full sm:w-auto bg-surface-container-low text-xs text-on-surface px-3 py-2 rounded-lg focus:outline-none cursor-pointer border border-surface-container"
-                >
-                  <option value="ALL">Todas las Categorías</option>
-                  <option value="Redes">Redes</option>
-                  <option value="Hardware">Hardware</option>
-                  <option value="Software">Software</option>
-                  <option value="Seguridad">Seguridad</option>
-                  <option value="Infraestructura">Infraestructura</option>
-                  <option value="General">General</option>
-                </select>
-
-                {/* Priority Filter */}
-                <select
-                  value={priorityFilter}
-                  onChange={(e) => setPriorityFilter(e.target.value)}
-                  className="w-full sm:w-auto bg-surface-container-low text-xs text-on-surface px-3 py-2 rounded-lg focus:outline-none cursor-pointer border border-surface-container"
-                >
-                  <option value="ALL">Todas las Prioridades</option>
-                  <option value="High">Alta</option>
-                  <option value="Medium">Media</option>
-                  <option value="Low">Baja</option>
-                </select>
-              </div>
-
-              {/* View Toggles & Add Button */}
-              <div className="flex items-center gap-2 justify-end">
-                <div className="flex items-center bg-surface-container-low rounded-lg p-1 border border-surface-container">
-                  <button
-                    onClick={() => setView('cards')}
-                    title="Vista Tarjetas"
-                    className={`p-1.5 rounded-md transition ${view === 'cards' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
-                  >
-                    <span className="material-symbols-outlined text-base">grid_view</span>
-                  </button>
-                  <button
-                    onClick={() => setView('table')}
-                    title="Vista Tabla"
-                    className={`p-1.5 rounded-md transition ${view === 'table' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
-                  >
-                    <span className="material-symbols-outlined text-base">format_list_bulleted</span>
-                  </button>
-                </div>
-
-                {canCreateIncident ? (
-                  <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-white font-semibold text-sm transition shadow-sm"
-                  >
-                    <span className="material-symbols-outlined text-lg">add_circle</span>
-                    <span>Nuevo Incidente</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setShowLoginModal(true)}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-white font-semibold text-sm transition shadow-sm"
-                    title="Inicia sesión para registrar incidentes"
-                  >
-                    <span className="material-symbols-outlined text-lg">login</span>
-                    <span>Iniciar sesión</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          </section>
-
-          {/* Main Incident Display */}
-          <section className="w-full">
-            {filteredIncidents.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-12 text-center rounded-xl bg-surface-container-lowest border border-dashed border-surface-container">
-                <span className="material-symbols-outlined text-5xl text-outline mb-2">content_paste_off</span>
-                <h3 className="font-headline-sm text-base text-on-surface font-semibold">No se encontraron incidentes</h3>
-                <p className="text-xs text-on-surface-variant mt-1 max-w-sm">No hay registros que coincidan con los filtros seleccionados.</p>
-                <button
-                  onClick={() => { setStatusFilter('ALL'); setPriorityFilter('ALL'); setCategoryFilter('ALL'); setSearchQuery(''); }}
-                  className="mt-4 px-4 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold"
-                >
-                  Limpiar Filtros
-                </button>
-              </div>
-            ) : view === 'cards' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {filteredIncidents.map((item) => {
-                  const isActive = item.status === 'Active';
-                  const catClass = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.General;
-
-                  return (
-                    <div key={item.id} className="relative flex flex-col justify-between rounded-xl bg-surface-container-lowest p-4 shadow-sm hover:shadow-md transition border border-surface-container">
-                      <div>
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <div>
-                            <span className="font-mono text-xs font-bold text-primary">{item.ticketCode}</span>
-                            <h3
-                              onClick={() => handleOpenDetailModal(item)}
-                              className="font-headline-sm text-sm text-on-surface font-bold hover:text-primary transition cursor-pointer mt-0.5 line-clamp-1"
-                            >
-                              {item.title}
-                            </h3>
-                          </div>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-container text-on-surface-variant'}`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-600' : 'bg-outline'}`}></span>
-                              {statusLabel(item.status)}
-                            </span>
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold text-white ${item.priority === 'High' ? 'bg-primary' : item.priority === 'Medium' ? 'bg-amber-500' : 'bg-sky-600'}`}>
-                              {priorityLabel(item.priority)}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="mt-2 text-xs text-on-surface line-clamp-2">
-                          <span className="font-semibold text-on-surface-variant">Descripción:</span> {item.description}
-                        </div>
-
-                        {item.rejectionReason && (
-                          <div className="mt-2.5 p-2 rounded-lg bg-surface-container-low text-xs flex items-start gap-1.5 border border-surface-container">
-                            <span className="font-semibold text-on-surface-variant shrink-0">Observaciones:</span>
-                            <span className="text-on-surface break-words">{item.rejectionReason}</span>
-                          </div>
-                        )}
-
-                        <div className="mt-3 flex items-center justify-between text-[11px] text-outline font-mono pt-2 border-t border-surface-container">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border ${catClass}`}>
-                            {item.category}
-                          </span>
-                          <span className="text-on-surface-variant truncate max-w-[130px]" title={item.location}>
-                            {item.location || 'Campus UTP'}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="mt-3 pt-2 border-t border-surface-container flex items-center justify-between gap-1">
-                        <button
-                          onClick={() => handleOpenDetailModal(item)}
-                          className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 text-xs font-semibold transition"
-                        >
-                          <span className="material-symbols-outlined text-base">visibility</span>
-                          <span>Detalle</span>
-                        </button>
-                        {canEditIncident && (
-                          <button
-                            onClick={() => handleOpenPatchModal(item)}
-                            className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 text-xs font-semibold transition"
-                          >
-                            <span className="material-symbols-outlined text-base">edit</span>
-                            <span>Editar</span>
-                          </button>
-                        )}
-                        {canDeleteIncident && (
-                          <button
-                            onClick={() => handleDelete(item.id, item.ticketCode, item.title)}
-                            className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary/10 text-xs font-semibold transition"
-                          >
-                            <span className="material-symbols-outlined text-base">delete</span>
-                            <span>Eliminar</span>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="overflow-x-auto rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-surface-container-low text-xs uppercase text-on-surface-variant border-b border-surface-container">
-                    <tr>
-                      <th className="py-3 px-4">Ticket</th>
-                      <th className="py-3 px-4">Título &amp; Ubicación</th>
-                      <th className="py-3 px-4">Categoría</th>
-                      <th className="py-3 px-4">Estado</th>
-                      <th className="py-3 px-4">Prioridad</th>
-                      <th className="py-3 px-4">Notas / Resolución</th>
-                      <th className="py-3 px-4 text-right">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-surface-container">
-                    {filteredIncidents.map((item) => {
-                      const isActive = item.status === 'Active';
-                      const catClass = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.General;
-
-                      return (
-                        <tr key={item.id} className="hover:bg-surface-container-low transition">
-                          <td className="py-3 px-4 font-mono font-bold text-primary">{item.ticketCode}</td>
-                          <td className="py-3 px-4">
-                            <div className="font-bold text-on-surface">{item.title}</div>
-                            <div className="text-on-surface-variant text-xs">{item.location || 'Campus UTP'}</div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border ${catClass}`}>
-                              {item.category}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-container text-on-surface-variant'}`}>
-                              {statusLabel(item.status)}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold text-white ${item.priority === 'High' ? 'bg-primary' : item.priority === 'Medium' ? 'bg-amber-500' : 'bg-sky-600'}`}>
-                              {priorityLabel(item.priority)}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-on-surface-variant text-xs max-w-xs truncate">{item.rejectionReason || '—'}</td>
-                          <td className="py-3 px-4 text-right">
-                            <div className="inline-flex items-center gap-1">
-                              <button onClick={() => handleOpenDetailModal(item)} className="p-1.5 rounded-lg text-tertiary hover:bg-tertiary/10" title="Ver Detalle">
-                                <span className="material-symbols-outlined text-base">visibility</span>
-                              </button>
-                              {canEditIncident && (
-                                <button onClick={() => handleOpenPatchModal(item)} className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-500/10" title="Editar Estado y Prioridad">
-                                  <span className="material-symbols-outlined text-base">edit</span>
-                                </button>
-                              )}
-                              {canDeleteIncident && (
-                                <button onClick={() => handleDelete(item.id, item.ticketCode, item.title)} className="p-1.5 rounded-lg text-primary hover:bg-primary/10" title="Eliminar">
-                                  <span className="material-symbols-outlined text-base">delete</span>
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </section>
+            <IncidentMetrics
+              base={base}
+              categoryFilter={categoryFilter}
+              currentHost={currentHost}
+              incidents={incidents}
+              isOnline={isOnline}
+              setCategoryFilter={setCategoryFilter}
+              setShowDocsModal={setShowDocsModal}
+              stats={stats}
+            />
+            <IncidentFilters
+              canCreateIncident={canCreateIncident}
+              categoryFilter={categoryFilter}
+              priorityFilter={priorityFilter}
+              searchQuery={searchQuery}
+              setCategoryFilter={setCategoryFilter}
+              setPriorityFilter={setPriorityFilter}
+              setSearchQuery={setSearchQuery}
+              setShowCreateModal={setShowCreateModal}
+              setShowLoginModal={setShowLoginModal}
+              setStatusFilter={setStatusFilter}
+              setView={setView}
+              statusFilter={statusFilter}
+              value={value}
+              view={view}
+            />
+            <IncidentList
+              canDeleteIncident={canDeleteIncident}
+              canEditIncident={canEditIncident}
+              catClass={catClass}
+              filteredIncidents={filteredIncidents}
+              handleDelete={handleDelete}
+              handleOpenDetailModal={handleOpenDetailModal}
+              handleOpenPatchModal={handleOpenPatchModal}
+              isActive={isActive}
+              setCategoryFilter={setCategoryFilter}
+              setPriorityFilter={setPriorityFilter}
+              setSearchQuery={setSearchQuery}
+              setStatusFilter={setStatusFilter}
+              view={view}
+            />
           </div>
-
-          {activeView === 'users' && (
-            <section className="w-full pt-2 pb-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-                <div className="flex items-center gap-2 text-xs text-on-surface-variant">
-                  <span className="flex items-center gap-1 font-semibold text-primary">
-                    <span className="material-symbols-outlined text-sm">manage_accounts</span>
-                    Usuarios
-                  </span>
-                  <span>/</span>
-                  <span className="text-on-surface font-medium">Administración de Usuarios</span>
-                </div>
-                {isAdmin && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={loadUsers}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-primary shadow-sm text-xs font-semibold"
-                    >
-                      <span className="material-symbols-outlined text-sm">refresh</span>
-                      Recargar
-                    </button>
-                    <button
-                      onClick={() => { setRegisterError(''); setShowRegisterModal(true); }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-container text-white text-xs font-semibold shadow-sm"
-                    >
-                      <span className="material-symbols-outlined text-base">person_add</span>
-                      Registrar Usuario
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {!isAdmin ? (
-                <div className="flex flex-col items-center justify-center p-12 text-center rounded-xl bg-surface-container-lowest border border-dashed border-surface-container">
-                  <span className="material-symbols-outlined text-5xl text-outline mb-2">lock</span>
-                  <h3 className="font-headline-sm text-base text-on-surface font-semibold">Acceso restringido</h3>
-                  <p className="text-xs text-on-surface-variant mt-1 max-w-sm">Solo un usuario con rol ADMIN puede listar y actualizar roles.</p>
-                </div>
-              ) : (
-                <>
-                  {!usersAvailable && (
-                    <div className="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-2">
-                      <span className="material-symbols-outlined text-amber-600 text-xl">warning</span>
-                      <div>
-                        <p className="text-sm font-bold text-amber-800">Gestión de usuarios no disponible</p>
-                        <p className="text-xs text-amber-700 mt-1">
-                          La interfaz está lista, pero el servicio de usuarios no está disponible en este momento. Inténtalo más tarde.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {usersError && usersAvailable && (
-                    <div className="mb-4 p-3 rounded-xl bg-red-100 text-red-700 text-xs font-semibold flex items-center gap-2">
-                      <span className="material-symbols-outlined text-base">error</span>
-                      {usersError}
-                    </div>
-                  )}
-
-                  <div className="rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container mb-4 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-                    <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
-                      <div className="relative w-full sm:max-w-xs">
-                        <span className="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-lg">search</span>
-                        <input
-                          type="text"
-                          placeholder="Buscar por usuario, nombre o correo..."
-                          value={usersSearch}
-                          onChange={(e) => setUsersSearch(e.target.value)}
-                          className="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 border border-surface-container"
-                        />
-                      </div>
-                      <select
-                        value={userRoleFilter}
-                        onChange={(e) => setUserRoleFilter(e.target.value)}
-                        className="w-full sm:w-auto bg-surface-container-low text-xs text-on-surface px-3 py-2 rounded-lg focus:outline-none cursor-pointer border border-surface-container"
-                      >
-                        <option value="ALL">Todos los Roles</option>
-                        {USER_ROLES.map(role => (
-                          <option key={role} value={role}>{ROLE_LABELS[role] || role}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <span className="text-xs text-on-surface-variant font-semibold">
-                      {filteredUsers.length} de {users.length} usuarios
-                    </span>
-                  </div>
-
-                  <div className="overflow-x-auto rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container">
-                    <table className="w-full text-left text-sm">
-                      <thead className="bg-surface-container-low text-xs uppercase text-on-surface-variant border-b border-surface-container">
-                        <tr>
-                          <th className="py-3 px-4">ID</th>
-                          <th className="py-3 px-4">Usuario</th>
-                          <th className="py-3 px-4">Nombre / Correo</th>
-                          <th className="py-3 px-4">Rol actual</th>
-                          <th className="py-3 px-4">Cambiar rol</th>
-                          <th className="py-3 px-4 text-right">Acciones</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-surface-container">
-                        {usersLoading ? (
-                          <tr>
-                            <td colSpan={6} className="py-8 px-4 text-center text-xs text-on-surface-variant">Cargando usuarios...</td>
-                          </tr>
-                        ) : filteredUsers.length === 0 ? (
-                          <tr>
-                            <td colSpan={6} className="py-8 px-4 text-center text-xs text-on-surface-variant">
-                              {users.length === 0 ? 'No se pudieron cargar usuarios desde el backend.' : 'No hay usuarios que coincidan con los filtros.'}
-                            </td>
-                          </tr>
-                        ) : (
-                          filteredUsers.map(item => {
-                            const currentRole = item.role;
-                            const isSelf = Boolean(user && item.username === user.username);
-                            const badge = ROLE_STYLES[currentRole] || ROLE_STYLES.OPERATOR;
-
-                            return (
-                              <tr key={item.id} className="hover:bg-surface-container-low transition">
-                                <td className="py-3 px-4 font-mono text-xs text-on-surface-variant">{item.id}</td>
-                                <td className="py-3 px-4">
-                                  <button
-                                    onClick={() => handleOpenUserDetail(item)}
-                                    className="font-bold text-on-surface hover:text-primary transition flex items-center gap-1.5"
-                                    title="Ver detalle del usuario"
-                                  >
-                                    {item.username}
-                                    {isSelf && <span className="px-1.5 py-0.5 rounded bg-surface-container text-[10px] font-semibold text-on-surface-variant">Tú</span>}
-                                  </button>
-                                </td>
-                                <td className="py-3 px-4">
-                                  <div className="text-on-surface text-xs font-semibold">{item.name || item.fullName || '—'}</div>
-                                  <div className="text-on-surface-variant text-xs">{item.email || '—'}</div>
-                                </td>
-                                <td className="py-3 px-4">
-                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border ${badge}`}>
-                                    {ROLE_LABELS[currentRole] || currentRole}
-                                  </span>
-                                </td>
-                                <td className="py-3 px-4">
-                                  {isSelf ? (
-                                    <span className="text-[11px] text-on-surface-variant">No puedes cambiar tu propio rol</span>
-                                  ) : (
-                                    <select
-                                      value={currentRole}
-                                      disabled={savingRoleId === item.id}
-                                      onChange={(e) => handleRoleChange(item, e.target.value)}
-                                      className="bg-surface-container-low text-xs text-on-surface px-2 py-1.5 rounded-lg border border-surface-container focus:outline-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
-                                      title={savingRoleId === item.id ? 'Guardando rol...' : 'Cambia el rol y se guarda al instante'}
-                                      aria-label={`Rol de ${item.username}`}
-                                    >
-                                      {USER_ROLES.map(role => (
-                                        <option key={role} value={role}>{ROLE_LABELS[role] || role}</option>
-                                      ))}
-                                    </select>
-                                  )}
-                                  {savingRoleId === item.id && (
-                                    <div className="text-[10px] text-on-surface-variant mt-1">Guardando...</div>
-                                  )}
-                                </td>
-                                <td className="py-3 px-4 text-right">
-                                  <div className="inline-flex flex-wrap items-center justify-end gap-1">
-                                    <button
-                                      onClick={() => handleOpenPasswordModal(item)}
-                                      className="px-2.5 py-1.5 rounded-lg text-tertiary hover:bg-tertiary/10 text-xs font-semibold flex items-center gap-1"
-                                      title={`Cambiar contraseña de ${item.username}`}
-                                    >
-                                      <span className="material-symbols-outlined text-base">key</span>
-                                      Contraseña
-                                    </button>
-                                    {!isSelf && (
-                                      <button
-                                        onClick={() => handleDeleteUser(item)}
-                                        className="px-2.5 py-1.5 rounded-lg text-error hover:bg-error/10 text-xs font-semibold flex items-center gap-1"
-                                        title={`Eliminar ${item.username}`}
-                                      >
-                                        <span className="material-symbols-outlined text-base">person_remove</span>
-                                        Eliminar
-                                      </button>
-                                    )}
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <p className="text-[11px] text-on-surface-variant mt-3">
-                    Los roles se actualizan al instante. Solo un administrador puede gestionar usuarios y roles.
-                  </p>
-                </>
-              )}
-            </section>
-          )}
+          <UsersPanel
+            activeView={activeView}
+            badge={badge}
+            currentRole={currentRole}
+            filteredUsers={filteredUsers}
+            handleDeleteUser={handleDeleteUser}
+            handleOpenPasswordModal={handleOpenPasswordModal}
+            handleOpenUserDetail={handleOpenUserDetail}
+            handleRoleChange={handleRoleChange}
+            isAdmin={isAdmin}
+            isSelf={isSelf}
+            label={label}
+            loadUsers={loadUsers}
+            savingRoleId={savingRoleId}
+            setRegisterError={setRegisterError}
+            setShowRegisterModal={setShowRegisterModal}
+            setUserRoleFilter={setUserRoleFilter}
+            setUsersSearch={setUsersSearch}
+            user={user}
+            userRoleFilter={userRoleFilter}
+            users={users}
+            usersAvailable={usersAvailable}
+            usersError={usersError}
+            usersLoading={usersLoading}
+            usersSearch={usersSearch}
+            value={value}
+          />
         </div>
       </main>
-
-      {/* Floating Toast */}
-      {toast.visible && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-surface-container-lowest shadow-xl max-w-md border border-surface-container transition-all">
-          <div className={`p-2 rounded-lg flex items-center justify-center ${toast.isSuccess ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-            <span className="material-symbols-outlined text-xl">{toast.isSuccess ? 'check_circle' : 'error'}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-headline-sm text-sm text-on-surface font-bold">{toast.title}</span>
-            <span className="font-body-sm text-xs text-on-surface-variant">{toast.message}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Mi Perfil */}
-      {showProfileModal && profileUser && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-md rounded-2xl bg-surface-container-lowest p-6 shadow-2xl flex flex-col border border-surface-container">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg">
-                  {String(profileUser.name || profileUser.username || '?').charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <h2 className="font-headline-md text-lg text-on-surface font-bold">Mi Perfil</h2>
-                  <p className="text-xs text-on-surface-variant">Sesión activa</p>
-                </div>
-              </div>
-              <button onClick={() => setShowProfileModal(false)} className="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant">
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
-            </div>
-
-            <div className="py-4 space-y-3">
-              {profileLoading && (
-                <div className="p-2.5 rounded-lg bg-surface-container-low text-xs text-on-surface-variant">Actualizando datos de sesión...</div>
-              )}
-              {profileError && (
-                <div className="p-3 rounded-lg bg-red-100 text-red-700 text-xs font-semibold">{profileError}</div>
-              )}
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Usuario</span>
-                  <p className="text-sm text-on-surface font-semibold mt-0.5">{profileUser.username || '—'}</p>
-                </div>
-                <div>
-                  <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Rol</span>
-                  <div className="mt-1">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border ${ROLE_STYLES[String(profileUser.role || '').toUpperCase()] || ROLE_STYLES.OPERATOR}`}>
-                      {ROLE_LABELS[String(profileUser.role || '').toUpperCase()] || profileUser.role || '—'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Nombre completo</span>
-                <p className="text-sm text-on-surface mt-0.5">{profileUser.name || profileUser.fullName || '—'}</p>
-              </div>
-
-              <div>
-                <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Correo institucional</span>
-                <p className="text-sm text-on-surface mt-0.5 break-all">{profileUser.email || 'No registrado'}</p>
-              </div>
-
-              <div className="p-2.5 rounded-lg bg-surface-container-low border border-surface-container flex items-center gap-2 text-[11px] text-on-surface-variant">
-                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                Token de sesión activo · {currentHost.replace(/^https?:\/\//, '')}
-              </div>
-
-              <button
-                onClick={() => { setShowProfileModal(false); handleOpenPasswordModal(null); }}
-                className="w-full py-2.5 rounded-lg border border-primary/30 text-primary hover:bg-primary/10 text-xs font-bold flex items-center justify-center gap-1.5 transition"
-              >
-                <span className="material-symbols-outlined text-base">key</span>
-                Cambiar mi contraseña
-              </button>
-            </div>
-
-            <div className="pt-3 border-t border-surface-container flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                {isAdmin && (
-                  <button
-                    onClick={() => { setShowProfileModal(false); setActiveView('users'); }}
-                    className="px-3 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold flex items-center gap-1"
-                  >
-                    <span className="material-symbols-outlined text-base">manage_accounts</span>
-                    Usuarios
-                  </button>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="px-3 py-2 rounded-lg text-error hover:bg-error/10 text-xs font-semibold flex items-center gap-1"
-                >
-                  <span className="material-symbols-outlined text-base">logout</span>
-                  Cerrar sesión
-                </button>
-              </div>
-              <button onClick={() => setShowProfileModal(false)} className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-bold">Cerrar</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Cambio de Contraseña (PATCH /api/users/{id}/password) */}
-      {showPasswordModal && passwordTarget && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-md rounded-2xl bg-surface-container-lowest p-6 shadow-2xl flex flex-col border border-surface-container">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-primary text-white">
-                  <span className="material-symbols-outlined text-2xl">key</span>
-                </div>
-                <div>
-                  <h2 className="font-headline-md text-lg text-on-surface font-bold">Cambiar contraseña</h2>
-                  <p className="text-xs text-on-surface-variant">
-                    {passwordTarget.isSelf ? 'Mi cuenta' : passwordTarget.username}
-                  </p>
-                </div>
-              </div>
-              <button onClick={() => setShowPasswordModal(false)} className="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant">
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
-            </div>
-
-            <form onSubmit={handlePasswordSubmit} className="py-4 space-y-3">
-              {passwordInfo && (
-                <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs">
-                  {passwordInfo}
-                </div>
-              )}
-              {passwordError && (
-                <div className="p-3 rounded-lg bg-red-100 text-red-700 text-xs font-semibold">{passwordError}</div>
-              )}
-
-              <div className="p-2.5 rounded-lg bg-surface-container-low border border-surface-container text-[11px] text-on-surface-variant">
-                {passwordTarget.isSelf
-                  ? 'Para tu propia cuenta se exige la contraseña actual.'
-                  : `Como administrador puedes asignar una nueva contraseña a ${passwordTarget.username} sin conocer la actual.`}
-              </div>
-
-              {passwordTarget.isSelf && !passwordTarget.id && (
-                <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1">ID de usuario <span className="text-primary">*</span></label>
-                  <input
-                    type="number"
-                    min={1}
-                    placeholder="ej. 3"
-                    value={passwordForm.userId}
-                    onChange={(e) => setPasswordForm({ ...passwordForm, userId: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                  />
-                  <p className="text-[11px] text-on-surface-variant mt-1">Pídelo al administrador o consúltalo en la vista Usuarios.</p>
-                </div>
-              )}
-
-              {passwordTarget.isSelf && (
-                <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1">Contraseña actual <span className="text-primary">*</span></label>
-                  <input
-                    type="password"
-                    autoComplete="current-password"
-                    value={passwordForm.currentPassword}
-                    onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Nueva contraseña <span className="text-primary">*</span></label>
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  value={passwordForm.newPassword}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                />
-                <p className="text-[11px] text-on-surface-variant mt-1">Mínimo 6 caracteres.</p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Confirmar nueva contraseña <span className="text-primary">*</span></label>
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  value={passwordForm.confirmPassword}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                />
-              </div>
-
-              <div className="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowPasswordModal(false)}
-                  className="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={passwordSaving || (!passwordTarget.id && !passwordForm.userId)}
-                  className="px-5 py-2 rounded-lg bg-primary hover:bg-primary-container text-white text-xs font-bold shadow-md transition disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {passwordSaving ? 'Guardando...' : 'Guardar contraseña'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Login */}
-      {showLoginModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-md rounded-2xl bg-surface-container-lowest p-6 shadow-2xl flex flex-col border border-surface-container">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-primary text-white">
-                  <span className="material-symbols-outlined text-2xl">lock</span>
-                </div>
-                <div>
-                  <h2 className="font-headline-md text-lg text-on-surface font-bold">Autenticación UTP TI</h2>
-                  <p className="text-xs text-on-surface-variant">Mesa Operativa</p>
-                </div>
-              </div>
-              <button onClick={() => setShowLoginModal(false)} className="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant">
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
-            </div>
-
-            <form onSubmit={handleLoginSubmit} className="py-4 space-y-4">
-              {loginError && (
-                <div className="p-3 rounded-lg bg-red-100 text-red-700 text-xs font-semibold">{loginError}</div>
-              )}
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Usuario o Correo Institucional</label>
-                <input
-                  type="text"
-                  required
-                  value={loginForm.username}
-                  onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Contraseña</label>
-                <input
-                  type="password"
-                  required
-                  value={loginForm.password}
-                  onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                />
-              </div>
-
-              <div className="p-3 rounded-lg bg-surface-container-low border border-surface-container">
-                <span className="block text-[11px] font-semibold text-on-surface-variant mb-1.5 uppercase">Cuentas Pre-configuradas UTP:</span>
-                <div className="flex flex-wrap gap-1.5">
-                  <button type="button" onClick={() => setLoginForm({ username: 'admin', password: 'admin123' })} className="px-2 py-1 rounded bg-white hover:bg-surface-container text-[11px] font-medium border border-surface-container text-on-surface">Admin (admin123)</button>
-                  <button type="button" onClick={() => setLoginForm({ username: 'supervisor', password: 'utp2025' })} className="px-2 py-1 rounded bg-white hover:bg-surface-container text-[11px] font-medium border border-surface-container text-on-surface">Supervisor (utp2025)</button>
-                  <button type="button" onClick={() => setLoginForm({ username: 'operador', password: 'operador123' })} className="px-2 py-1 rounded bg-white hover:bg-surface-container text-[11px] font-medium border border-surface-container text-on-surface">Operador (operador123)</button>
-                </div>
-              </div>
-
-              <button type="submit" className="w-full py-2.5 rounded-lg bg-primary hover:bg-primary-container text-white font-bold text-sm shadow-md transition">
-                Iniciar Sesión
-              </button>
-
-              <button
-                type="button"
-                onClick={() => { setLoginError(''); setShowLoginModal(false); setShowRegisterModal(true); }}
-                className="w-full py-2 rounded-lg border border-surface-container text-on-surface-variant hover:text-primary hover:border-primary text-xs font-semibold transition"
-              >
-                ¿No tienes cuenta? Registrar usuario
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Registro de Usuario (POST /api/users) */}
-      {showRegisterModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-md rounded-2xl bg-surface-container-lowest p-6 shadow-2xl flex flex-col border border-surface-container">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-primary text-white">
-                  <span className="material-symbols-outlined text-2xl">person_add</span>
-                </div>
-                <div>
-                  <h2 className="font-headline-md text-lg text-on-surface font-bold">Registrar Usuario TI</h2>
-                  <p className="text-xs text-on-surface-variant">Mesa Operativa</p>
-                </div>
-              </div>
-              <button onClick={() => setShowRegisterModal(false)} className="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant">
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
-            </div>
-
-            <form onSubmit={handleRegisterSubmit} className="py-4 space-y-3">
-              {registerError && (
-                <div className="p-3 rounded-lg bg-red-100 text-red-700 text-xs font-semibold">{registerError}</div>
-              )}
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Usuario <span className="text-primary">*</span></label>
-                <input
-                  type="text"
-                  required
-                  placeholder="ej. operador.noc"
-                  value={registerForm.username}
-                  onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Nombre completo</label>
-                <input
-                  type="text"
-                  placeholder="ej. Operador NOC Campus"
-                  value={registerForm.name}
-                  onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Correo institucional</label>
-                <input
-                  type="email"
-                  placeholder="ej. usuario@utp.edu.pe"
-                  value={registerForm.email}
-                  onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Contraseña <span className="text-primary">*</span></label>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={registerForm.password}
-                  onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                />
-                <p className="text-[11px] text-on-surface-variant mt-1">
-                  La cuenta se crea con rol <span className="font-semibold text-on-surface">Operador</span>. Solo un administrador puede asignar otro rol desde la página de Usuarios.
-                </p>
-              </div>
-
-              <div className="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => { setShowRegisterModal(false); setShowLoginModal(true); }}
-                  className="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold"
-                >
-                  Volver
-                </button>
-                <button type="submit" className="px-5 py-2 rounded-lg bg-primary hover:bg-primary-container text-white text-xs font-bold shadow-md transition">
-                  Registrar Usuario
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Crear Incidente */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-xl rounded-2xl bg-surface-container-lowest p-6 shadow-2xl flex flex-col border border-surface-container">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-primary text-white">
-                  <span className="material-symbols-outlined text-xl">add_alert</span>
-                </div>
-                <div>
-                  <h2 className="font-headline-md text-lg text-on-surface font-bold">Registrar Incidente TI</h2>
-                  <p className="text-xs text-on-surface-variant">Mesa de Servicio UTP</p>
-                </div>
-              </div>
-              <button onClick={() => setShowCreateModal(false)} className="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant">
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateSubmit} className="py-4 space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Título del Incidente <span className="text-primary">*</span></label>
-                <input
-                  type="text"
-                  required
-                  placeholder="ej. Falla en Access Point Piso 3 Pabellón B"
-                  value={newIncident.title}
-                  onChange={(e) => setNewIncident({ ...newIncident, title: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Descripción Técnica <span className="text-primary">*</span></label>
-                <textarea
-                  required
-                  rows={3}
-                  placeholder="Detalles del equipo, usuario impactado o fallo..."
-                  value={newIncident.description}
-                  onChange={(e) => setNewIncident({ ...newIncident, description: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1">Categoría</label>
-                  <select
-                    value={newIncident.category}
-                    onChange={(e) => setNewIncident({ ...newIncident, category: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-xs text-on-surface border border-surface-container focus:outline-none cursor-pointer"
-                  >
-                    <option value="Redes">Redes</option>
-                    <option value="Hardware">Hardware</option>
-                    <option value="Software">Software</option>
-                    <option value="Seguridad">Seguridad</option>
-                    <option value="Infraestructura">Infraestructura</option>
-                    <option value="General">General</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1">Prioridad</label>
-                  <select
-                    value={newIncident.priority}
-                    onChange={(e) => setNewIncident({ ...newIncident, priority: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-xs text-on-surface border border-surface-container focus:outline-none cursor-pointer"
-                  >
-                    <option value="Low">Baja — por defecto</option>
-                    <option value="Medium">Media</option>
-                    <option value="High">Alta</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1">Estado</label>
-                  <select
-                    value={newIncident.status}
-                    onChange={(e) => setNewIncident({ ...newIncident, status: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-xs text-on-surface border border-surface-container focus:outline-none cursor-pointer"
-                  >
-                    <option value="Active">Activo (En atención)</option>
-                    <option value="Inactive">Inactivo (Cerrado)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Sede / Ubicación UTP</label>
-                <input
-                  type="text"
-                  value={newIncident.location}
-                  onChange={(e) => setNewIncident({ ...newIncident, location: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-
-              <div className="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
-                <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold">Cancelar</button>
-                <button type="submit" className="px-5 py-2 rounded-lg bg-primary hover:bg-primary-container text-white text-xs font-bold shadow-md transition">Registrar Incidente</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Editar Estado */}
-      {showStatusModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-lg rounded-2xl bg-surface-container-lowest p-6 shadow-2xl flex flex-col border border-surface-container">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-600">
-                  <span className="material-symbols-outlined text-xl">edit_note</span>
-                </div>
-                <div>
-                  <h2 className="font-headline-md text-base text-on-surface font-bold">Editar Incidente</h2>
-                  <p className="text-xs text-on-surface-variant">Estado y prioridad • {patchStatusData.ticketCode}</p>
-                </div>
-              </div>
-              <button onClick={() => setShowStatusModal(false)} className="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant">
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
-            </div>
-
-            <form onSubmit={handlePatchSubmit} className="py-4 space-y-4">
-              <div>
-                <span className="block text-xs font-semibold text-on-surface mb-2">Seleccionar Nuevo Estado:</span>
-                <div className="grid grid-cols-2 gap-3">
-                  <label className={`cursor-pointer flex items-center gap-2 p-3 rounded-xl border transition ${patchStatusData.status === 'Active' ? 'bg-emerald-500/10 border-emerald-500' : 'bg-surface-container-low border-surface-container'}`}>
-                    <input
-                      type="radio"
-                      name="statusChoice"
-                      value="Active"
-                      checked={patchStatusData.status === 'Active'}
-                      onChange={() => setPatchStatusData({ ...patchStatusData, status: 'Active' })}
-                      className="accent-emerald-600"
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-xs font-bold text-emerald-800">Activo</span>
-                      <span className="text-[11px] text-on-surface-variant">En curso / Atención</span>
-                    </div>
-                  </label>
-                  <label className={`cursor-pointer flex items-center gap-2 p-3 rounded-xl border transition ${patchStatusData.status === 'Inactive' ? 'bg-slate-200 border-slate-400' : 'bg-surface-container-low border-surface-container'}`}>
-                    <input
-                      type="radio"
-                      name="statusChoice"
-                      value="Inactive"
-                      checked={patchStatusData.status === 'Inactive'}
-                      onChange={() => setPatchStatusData({ ...patchStatusData, status: 'Inactive' })}
-                      className="accent-slate-700"
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-xs font-bold text-slate-800">Inactivo</span>
-                      <span className="text-[11px] text-on-surface-variant">Solucionado / Cerrado</span>
-                    </div>
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <span className="block text-xs font-semibold text-on-surface mb-2">Prioridad del Incidente:</span>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {[
-                    { value: 'High', label: 'Alta', hint: 'Atención inmediata', active: 'bg-rose-500/10 border-rose-500', dot: 'bg-rose-600' },
-                    { value: 'Medium', label: 'Media', hint: 'Atención normal', active: 'bg-amber-500/10 border-amber-500', dot: 'bg-amber-500' },
-                    { value: 'Low', label: 'Baja', hint: 'Puede esperar', active: 'bg-sky-500/10 border-sky-500', dot: 'bg-sky-600' },
-                  ].map(option => (
-                    <label
-                      key={option.value}
-                      className={`cursor-pointer flex items-center gap-2 p-3 rounded-xl border transition ${patchStatusData.priority === option.value ? option.active : 'bg-surface-container-low border-surface-container'}`}
-                    >
-                      <input
-                        type="radio"
-                        name="priorityChoice"
-                        value={option.value}
-                        checked={patchStatusData.priority === option.value}
-                        onChange={() => setPatchStatusData({ ...patchStatusData, priority: option.value })}
-                        className="accent-primary"
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-xs font-bold text-on-surface flex items-center gap-1.5">
-                          <span className={`w-2 h-2 rounded-full ${option.dot}`}></span>
-                          {option.label}
-                        </span>
-                        <span className="text-[11px] text-on-surface-variant">{option.hint}</span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-                <p className="text-[11px] text-on-surface-variant mt-1.5">Valor por defecto: Baja.</p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Razones del rechazo / Notas de resolución</label>
-                <textarea
-                  rows={3}
-                  value={patchStatusData.message}
-                  onChange={(e) => setPatchStatusData({ ...patchStatusData, message: e.target.value })}
-                  placeholder="ej. Resuelto tras reemplazo de cable de red..."
-                  className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface border border-surface-container focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                />
-              </div>
-
-              <div className="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
-                <button type="button" onClick={() => setShowStatusModal(false)} className="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold">Cancelar</button>
-                <button type="submit" className="px-5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-md transition">Guardar cambios</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Detalle */}
-      {showDetailModal && selectedIncident && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-xl rounded-2xl bg-surface-container-lowest p-6 shadow-2xl flex flex-col border border-surface-container">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant">
-                  <span className="material-symbols-outlined text-xl">info</span>
-                </div>
-                <div>
-                  <h2 className="font-headline-md text-base text-on-surface font-bold">{selectedIncident.ticketCode} (ID: {selectedIncident.id})</h2>
-                  <p className="text-xs text-on-surface-variant">Detalle del incidente</p>
-                </div>
-              </div>
-              <button onClick={() => setShowDetailModal(false)} className="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant">
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
-            </div>
-
-            <div className="py-4 space-y-3">
-              <div>
-                <span className="text-xs uppercase text-on-surface-variant font-semibold">Título</span>
-                <h3 className="font-headline-sm text-sm text-on-surface font-bold mt-0.5">{selectedIncident.title}</h3>
-              </div>
-
-              <div>
-                <span className="text-xs uppercase text-on-surface-variant font-semibold">Descripción Técnica</span>
-                <p className="text-xs text-on-surface mt-0.5 p-3 rounded-lg bg-surface-container-low border border-surface-container">{selectedIncident.description}</p>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Categoría</span>
-                  <div className="mt-1">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border ${CATEGORY_COLORS[selectedIncident.category] || CATEGORY_COLORS.General}`}>
-                      {selectedIncident.category}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Estado</span>
-                  <div className="mt-1">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${selectedIncident.status === 'Active' ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-container text-on-surface-variant'}`}>
-                      {statusLabel(selectedIncident.status)}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Prioridad</span>
-                  <div className="mt-1">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold text-white ${selectedIncident.priority === 'High' ? 'bg-primary' : selectedIncident.priority === 'Medium' ? 'bg-amber-500' : 'bg-sky-600'}`}>
-                      {priorityLabel(selectedIncident.priority)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <span className="text-xs uppercase text-on-surface-variant font-semibold">Observaciones / Notas de Cierre</span>
-                <p className="text-xs text-on-surface mt-0.5 p-3 rounded-lg bg-surface-container-low border border-surface-container">
-                  {selectedIncident.rejectionReason || 'Ninguna observación registrada.'}
-                </p>
-              </div>
-
-              <div className="p-2.5 rounded-lg bg-surface-container-low flex flex-col gap-1 text-[11px] text-on-surface-variant border border-surface-container font-mono">
-                <span>Registrado: {selectedIncident.createdAt}</span>
-                <span>Ubicación: {selectedIncident.location || 'Campus UTP Central'}</span>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-surface-container flex justify-end">
-              <button onClick={() => setShowDetailModal(false)} className="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold">Cerrar Detalle</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Detalle de Usuario (GET /api/users/{id}) */}
-      {showUserModal && selectedUser && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-md rounded-2xl bg-surface-container-lowest p-6 shadow-2xl flex flex-col border border-surface-container">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-bold">
-                  {String(selectedUser.username || '?').charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <h2 className="font-headline-md text-base text-on-surface font-bold">{selectedUser.username}</h2>
-                  <p className="text-xs text-on-surface-variant">Información del usuario</p>
-                </div>
-              </div>
-              <button onClick={() => setShowUserModal(false)} className="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant">
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
-            </div>
-
-            <div className="py-4 space-y-3">
-              {userDetailLoading && (
-                <div className="p-3 rounded-lg bg-surface-container-low text-xs text-on-surface-variant">Cargando detalle...</div>
-              )}
-              {userDetailError && (
-                <div className="p-3 rounded-lg bg-red-100 text-red-700 text-xs font-semibold">{userDetailError}</div>
-              )}
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <span className="text-[11px] uppercase text-on-surface-variant font-semibold">ID</span>
-                  <p className="text-sm text-on-surface font-mono mt-0.5">{selectedUser.id}</p>
-                </div>
-                <div>
-                  <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Rol</span>
-                  <div className="mt-1">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border ${ROLE_STYLES[selectedUser.role] || ROLE_STYLES.OPERATOR}`}>
-                      {ROLE_LABELS[String(selectedUser.role || '').toUpperCase()] || selectedUser.role}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Nombre</span>
-                  <p className="text-xs text-on-surface mt-0.5">{selectedUser.name || selectedUser.fullName || '—'}</p>
-                </div>
-                <div>
-                  <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Correo</span>
-                  <p className="text-xs text-on-surface mt-0.5 break-all">{selectedUser.email || '—'}</p>
-                </div>
-              </div>
-
-              <div>
-                <span className="text-[11px] uppercase text-on-surface-variant font-semibold">Registrado</span>
-                <p className="text-xs text-on-surface font-mono mt-0.5">{selectedUser.createdAt || '—'}</p>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-surface-container flex justify-end">
-              <button onClick={() => setShowUserModal(false)} className="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold">Cerrar</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Docs */}
-      {showDocsModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-2xl max-h-[85vh] rounded-2xl bg-surface-container-lowest p-6 shadow-2xl flex flex-col border border-surface-container overflow-hidden">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-primary text-white">
-                  <span className="material-symbols-outlined text-xl">api</span>
-                </div>
-                <div>
-                  <h2 className="font-headline-md text-base text-on-surface font-bold">Documentación de la API</h2>
-                  <p className="text-xs text-on-surface-variant">Referencia de servicios disponibles</p>
-                </div>
-              </div>
-              <button onClick={() => setShowDocsModal(false)} className="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant">
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
-            </div>
-
-            <div className="py-4 space-y-3 overflow-y-auto max-h-[60vh] pr-1">
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-primary text-white">POST</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/auth/login</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Autenticación de operadores y administradores TI (Token / Sesión).</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-emerald-600 text-white">POST</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/users</code>
-                  <span className="text-xs text-emerald-600 font-semibold">201 Created</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Registro de usuarios (usuario, nombre, correo y contraseña). Se crean con rol Operador.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/users</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Listado de usuarios para el panel de administración (requiere token ADMIN).</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/users/{'{id}'}</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Detalle de un usuario por su identificador.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-amber-500 text-white">PATCH</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/users/{'{id}'}/role</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Actualización del rol de un usuario (Administrador, Supervisor, Operador o Soporte).</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-amber-500 text-white">PATCH</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/users/{'{id}'}/password</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Cambio de contraseña. El propio usuario envía actual + nueva; un administrador puede cambiarla sin la actual.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-red-600 text-white">DELETE</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/users/{'{id}'}</code>
-                  <span className="text-xs text-emerald-600 font-semibold">204 No Content</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Elimina una cuenta de usuario (solo administrador; no permite eliminar la propia).</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/auth/me</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Valida el token activo y devuelve el usuario autenticado.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-emerald-600 text-white">POST</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/auth/logout</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Invalida la sesión del usuario y limpia el token local.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Listado completo de incidentes registrados en la base de datos.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents/{'{id}'}</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Detalle de un incidente por su identificador.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents/stats</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Métricas globales: total, activos, inactivos, severidad y categorías.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents/stats/total</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Total de incidentes registrados.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents/stats/by-status</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Conteo de incidentes agrupado por estado.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents/stats/by-severity</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Conteo de incidentes agrupado por severidad.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents/stats/by-category</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Total de incidencias agrupadas por categoría (Redes, Hardware, etc.).</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-emerald-600 text-white">POST</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Creación de ticket con título, descripción, severidad, categoría y ubicación.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-amber-500 text-white">PATCH</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents/{'{id}'}/status</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Actualiza el estado (Activo / Inactivo) y las notas de rechazo o resolución.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-amber-500 text-white">PATCH</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents/{'{id}'}/priority</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Actualiza la prioridad del incidente (Alta / Media / Baja). Solo administrador.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-red-600 text-white">DELETE</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents/{'{id}'}</code>
-                  <span className="text-xs text-emerald-600 font-semibold">204 No Content</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Elimina permanentemente un incidente en la base de datos.</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low border border-surface-container">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded font-mono text-xs font-bold bg-sky-600 text-white">GET</span>
-                  <code className="font-mono text-xs font-bold text-on-surface">/api/incidents/stats/count</code>
-                  <span className="text-xs text-emerald-600 font-semibold">200 OK</span>
-                </div>
-                <p className="text-xs text-on-surface-variant mt-1">Cantidad total de incidentes (alias de stats/total).</p>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-surface-container flex justify-end">
-              <button onClick={() => setShowDocsModal(false)} className="px-4 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold">Entendido</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Cambiar Servidor */}
-      {showHostModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-md rounded-2xl bg-surface-container-lowest p-6 shadow-2xl flex flex-col border border-surface-container">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-container">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-tertiary text-xl">dns</span>
-                <h2 className="font-headline-md text-base text-on-surface font-bold">Configuración de Servidor Backend</h2>
-              </div>
-              <button onClick={() => setShowHostModal(false)} className="p-1 rounded-full hover:bg-surface-container-low text-on-surface-variant">
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
-            </div>
-
-            <div className="py-4 space-y-3">
-              <label className="block text-xs font-semibold text-on-surface">URL Base de la API:</label>
-              <input
-                type="text"
-                value={customHostInput}
-                onChange={(e) => setCustomHostInput(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-surface-container-low text-sm font-mono text-on-surface border border-surface-container focus:ring-2 focus:ring-primary/20 focus:outline-none"
-              />
-              <div className="flex gap-2">
-                <button type="button" onClick={() => setCustomHostInput(DEFAULT_LOCAL_URL)} className="flex-1 py-1.5 px-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-xs font-semibold text-on-surface">Local (8081)</button>
-                <button type="button" onClick={() => setCustomHostInput('http://localhost:8080')} className="flex-1 py-1.5 px-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-xs font-semibold text-on-surface">Local (8080)</button>
-                <button type="button" onClick={() => setCustomHostInput(DEFAULT_RENDER_URL)} className="flex-1 py-1.5 px-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-xs font-semibold text-on-surface">Render Prod</button>
-              </div>
-            </div>
-
-            <div className="pt-2 border-t border-surface-container flex justify-end gap-2">
-              <button onClick={handleSaveHost} className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-white text-xs font-bold">Guardar y Reconectar</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Footer */}
-      <footer className="w-full bg-surface-container-lowest border-t border-surface-container py-6">
-        <div className="w-full max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant">
-          <div className="flex items-center gap-3">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/50/Utplogonuevo.svg" alt="UTP Logo" className="h-6 w-auto object-contain" />
-            <span>© 2026 Universidad Tecnológica del Perú • Mesa Operativa de Incidentes TI (React)</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span>Mesa de Ayuda UTP</span>
-            <span>•</span>
-            <span>Soporte NOC Campus</span>
-            <span>•</span>
-            <span className={`font-mono font-semibold ${isOnline ? 'text-emerald-600' : 'text-error'}`}>
-              {isOnline ? `En línea: ${currentHost.replace(/^https?:\/\//, '')}` : 'Desconectado'}
-            </span>
-          </div>
-        </div>
-      </footer>
+      <Toast
+        toast={toast}
+      />
+      <ProfileModal
+        currentHost={currentHost}
+        handleLogout={handleLogout}
+        handleOpenPasswordModal={handleOpenPasswordModal}
+        isAdmin={isAdmin}
+        profileError={profileError}
+        profileLoading={profileLoading}
+        profileUser={profileUser}
+        setActiveView={setActiveView}
+        setShowProfileModal={setShowProfileModal}
+        showProfileModal={showProfileModal}
+      />
+      <PasswordModal
+        handlePasswordSubmit={handlePasswordSubmit}
+        label={label}
+        passwordError={passwordError}
+        passwordForm={passwordForm}
+        passwordInfo={passwordInfo}
+        passwordSaving={passwordSaving}
+        passwordTarget={passwordTarget}
+        setPasswordForm={setPasswordForm}
+        setShowPasswordModal={setShowPasswordModal}
+        showPasswordModal={showPasswordModal}
+        users={users}
+        value={value}
+      />
+      <LoginModal
+        handleLoginSubmit={handleLoginSubmit}
+        label={label}
+        loginError={loginError}
+        loginForm={loginForm}
+        setLoginError={setLoginError}
+        setLoginForm={setLoginForm}
+        setShowLoginModal={setShowLoginModal}
+        setShowRegisterModal={setShowRegisterModal}
+        showLoginModal={showLoginModal}
+        username={username}
+        value={value}
+      />
+      <RegisterModal
+        handleRegisterSubmit={handleRegisterSubmit}
+        label={label}
+        registerError={registerError}
+        registerForm={registerForm}
+        setRegisterForm={setRegisterForm}
+        setShowLoginModal={setShowLoginModal}
+        setShowRegisterModal={setShowRegisterModal}
+        showRegisterModal={showRegisterModal}
+        username={username}
+        users={users}
+        value={value}
+      />
+      <CreateIncidentModal
+        handleCreateSubmit={handleCreateSubmit}
+        label={label}
+        newIncident={newIncident}
+        setNewIncident={setNewIncident}
+        setShowCreateModal={setShowCreateModal}
+        showCreateModal={showCreateModal}
+        value={value}
+      />
+      <StatusModal
+        active={active}
+        handlePatchSubmit={handlePatchSubmit}
+        label={label}
+        patchStatusData={patchStatusData}
+        setPatchStatusData={setPatchStatusData}
+        setShowStatusModal={setShowStatusModal}
+        showStatusModal={showStatusModal}
+        value={value}
+      />
+      <DetailModal
+        selectedIncident={selectedIncident}
+        setShowDetailModal={setShowDetailModal}
+        showDetailModal={showDetailModal}
+      />
+      <UserDetailModal
+        selectedUser={selectedUser}
+        setShowUserModal={setShowUserModal}
+        showUserModal={showUserModal}
+        userDetailError={userDetailError}
+        userDetailLoading={userDetailLoading}
+        users={users}
+      />
+      <DocsModal
+        auth={auth}
+        base={base}
+        currentHost={currentHost}
+        incidents={incidents}
+        me={me}
+        setShowDocsModal={setShowDocsModal}
+        showDocsModal={showDocsModal}
+        stats={stats}
+        total={total}
+        users={users}
+      />
+      <HostModal
+        customHostInput={customHostInput}
+        handleSaveHost={handleSaveHost}
+        label={label}
+        setCustomHostInput={setCustomHostInput}
+        setShowHostModal={setShowHostModal}
+        showHostModal={showHostModal}
+        value={value}
+      />
+      <Footer
+        currentHost={currentHost}
+        isOnline={isOnline}
+      />
     </div>
   );
 }

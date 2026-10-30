@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        "primary": "#9e001f",
-        "primary-container": "#c8102e",
+        "primary": "#c8102e",
+        "primary-container": "#a60b24",
         "on-primary": "#ffffff",
         "on-primary-container": "#ffdad8",
         "secondary": "#ba0037",
@@ -19,8 +19,8 @@ export default {
         "tertiary-container": "#006aa1",
         "tertiary-fixed": "#cce5ff",
         "on-tertiary-fixed-variant": "#004b73",
-        "background": "#f9f9ff",
-        "surface": "#f9f9ff",
+        "background": "#f8fafc",
+        "surface": "#f8fafc",
         "surface-dim": "#cfdaf2",
         "surface-bright": "#f9f9ff",
         "surface-container-lowest": "#ffffff",
@@ -45,7 +45,8 @@ export default {
         "body-sm": ["Inter", "sans-serif"],
         "label-lg": ["Inter", "sans-serif"],
         "label-md": ["Inter", "sans-serif"],
-        "label-sm": ["Inter", "sans-serif"]
+        "label-sm": ["Inter", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"]
       }
     }
   },
