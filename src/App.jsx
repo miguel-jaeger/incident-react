@@ -80,6 +80,13 @@ function priorityLabel(priority) {
   return PRIORITY_LABELS[priority] || priority || '—';
 }
 
+function shortDate(value) {
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return '—';
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 export default function App() {
   // Estado principal
   const [incidents, setIncidents] = useState([]);
@@ -748,14 +755,40 @@ export default function App() {
     });
   }, [incidents, statusFilter, priorityFilter, categoryFilter, searchQuery]);
 
+  // Métricas del panel lateral (mismas fuentes que antes)
+  const activePct = stats.total > 0 ? Math.round((stats.active / stats.total) * 100) : 0;
+  const inactivePct = stats.total > 0 ? Math.round((stats.inactive / stats.total) * 100) : 0;
+  const highCount = (stats.bySeverity && (stats.bySeverity.High || stats.bySeverity.HIGH)) ||
+    incidents.filter(i => (i.priority || '').toUpperCase() === 'HIGH').length;
+
+  // Vista de tarjetas en columnas: activos vs. cerrados (mismos datos filtrados)
+  const kanbanColumns = [
+    {
+      key: 'active',
+      title: 'En atención / Activos',
+      hint: 'status: "Active"',
+      dot: 'bg-emerald-500',
+      badge: 'bg-emerald-100 text-emerald-700',
+      items: filteredIncidents.filter(item => item.status === 'Active'),
+    },
+    {
+      key: 'closed',
+      title: 'Cerrados / Inactivos',
+      hint: 'status: "Inactive"',
+      dot: 'bg-slate-400',
+      badge: 'bg-surface-container text-on-surface-variant',
+      items: filteredIncidents.filter(item => item.status !== 'Active'),
+    },
+  ];
+
   return (
     <div className="bg-background min-h-screen flex flex-col justify-between font-body-md text-on-surface antialiased">
       {/* Top Header */}
       <header className="fixed top-0 left-0 right-0 z-40 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-        <div className="h-16 w-full px-6 flex items-center justify-between gap-4">
+        <div className="h-16 w-full px-4 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-3">
             <img alt="UTP" className="h-9 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/5/50/Utplogonuevo.svg" />
-            <div className="flex flex-col">
+            <div className="hidden sm:flex flex-col">
               <span className="font-headline-sm text-base text-primary tracking-tight font-bold">UTP Incidentes TI</span>
               <span className="font-label-sm text-xs text-on-surface-variant leading-none">Gestión Campus &amp; Infraestructura (React)</span>
             </div>
@@ -795,8 +828,8 @@ export default function App() {
           </div>
 
           {/* Right Header: User profile */}
-          <div className="flex items-center gap-3">
-            <button onClick={loadData} title="Sincronizar" className="p-2 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition">
+          <div className="flex items-center gap-1 sm:gap-3">
+            <button onClick={loadData} title="Sincronizar" className="hidden sm:block p-2 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition">
               <span className="material-symbols-outlined text-xl">sync</span>
             </button>
 
@@ -804,7 +837,7 @@ export default function App() {
               type="button"
               onClick={handleOpenProfile}
               title={user ? 'Ver mi perfil' : 'Iniciar sesión'}
-              className="flex items-center gap-2 pl-2 border-l border-surface-container cursor-pointer hover:opacity-90 transition bg-transparent"
+              className="flex items-center gap-2 pl-1 sm:pl-2 border-l border-surface-container cursor-pointer hover:opacity-90 transition bg-transparent"
             >
               <div className="hidden sm:flex flex-col text-right">
                 <span className="font-label-sm text-xs text-on-surface font-semibold">{user ? user.name : 'Iniciar Sesión'}</span>
@@ -869,164 +902,182 @@ export default function App() {
         )}
         <div className="flex flex-col w-full">
           <div className={activeView === 'incidents' ? 'contents' : 'hidden'}>
-          {/* Top Status & Docs Bar */}
-          <section className="w-full pt-2 pb-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-              <div className="flex items-center gap-2 text-xs text-on-surface-variant">
-                <span className="flex items-center gap-1 font-semibold text-primary">
-                  <span className="material-symbols-outlined text-sm">terminal</span>
-                  Incidentes
-                </span>
-                <span>/</span>
-                <span className="text-on-surface font-medium">Mesa Operativa Campus</span>
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6 items-start">
 
-              <div className="flex items-center gap-2">
-                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${isOnline ? 'bg-emerald-500/10 text-emerald-700' : 'bg-red-500/10 text-red-700'}`}>
-                  <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500 animate-ping' : 'bg-red-500'}`}></span>
-                  <span>{isOnline ? 'Servicio en línea' : 'Servicio desconectado'}</span>
-                </div>
+            {/* Panel lateral: acción principal + métricas */}
+            <aside className="space-y-4 lg:sticky lg:top-24">
+              {canCreateIncident ? (
                 <button
-                  onClick={() => setShowDocsModal(true)}
-                  className="flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-primary shadow-sm hover:shadow transition text-xs font-semibold"
+                  onClick={() => setShowCreateModal(true)}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary hover:bg-primary-container text-white font-bold text-sm transition shadow-sm"
                 >
-                  <span className="material-symbols-outlined text-sm">code</span>
-                  <span>Documentación</span>
+                  <span className="material-symbols-outlined text-lg">add_circle</span>
+                  <span>Registrar Incidente</span>
                 </button>
-              </div>
-            </div>
+              ) : (
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  title="Inicia sesión para registrar incidentes"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary hover:bg-primary-container text-white font-bold text-sm transition shadow-sm"
+                >
+                  <span className="material-symbols-outlined text-lg">login</span>
+                  <span>Iniciar sesión</span>
+                </button>
+              )}
 
-            {/* Metric Bento Grid (5 Cards) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {/* Total Tickets */}
-              <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Total Incidentes</span>
-                  <span className="p-1 rounded-lg bg-surface-container text-tertiary material-symbols-outlined text-base">dataset</span>
+              <div className="rounded-2xl bg-surface-container-lowest border border-surface-container shadow-sm p-4 space-y-3">
+                <div className="flex items-center gap-2 px-1">
+                  <span className="material-symbols-outlined text-primary text-lg">monitoring</span>
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-on-surface">Panel de métricas UTP</h2>
+                  <span className="ml-auto font-mono text-[10px] text-outline">GET /api/incidents</span>
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-on-surface font-bold">{stats.total || incidents.length}</span>
-                  <span className="text-xs text-emerald-600 font-medium">Métricas actualizadas</span>
+
+                {/* Total */}
+                <div className="rounded-xl border border-surface-container bg-surface-container-low p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Total incidentes</span>
+                    <span className="material-symbols-outlined text-on-surface-variant text-lg">dataset</span>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="font-display text-3xl font-extrabold text-on-surface">{stats.total || incidents.length}</span>
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold">100% Sync</span>
+                  </div>
                 </div>
-                <div className="mt-2 text-xs text-on-surface-variant flex items-center justify-between">
-                  <span>Sincronizado con la base de datos</span>
-                  <span className="font-semibold text-on-surface">En línea</span>
+
+                {/* Activos */}
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Activos / En atención</span>
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">Active</span>
+                  </div>
+                  <div className="mt-2 flex items-end justify-between">
+                    <span className="font-display text-3xl font-extrabold text-emerald-800">{stats.active || 0}</span>
+                    <span className="text-xs text-emerald-700">Requieren acción técnica</span>
+                  </div>
+                  <div className="mt-3 h-1.5 rounded-full bg-emerald-100 overflow-hidden">
+                    <div className="h-full rounded-full bg-emerald-600" style={{ width: `${activePct}%` }}></div>
+                  </div>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-tertiary to-tertiary-container"></div>
+
+                {/* Inactivos */}
+                <div className="rounded-xl border border-surface-container bg-surface-container-low p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Inactivos / Resueltos</span>
+                    <span className="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-mono text-[10px] font-bold">Inactive</span>
+                  </div>
+                  <div className="mt-2 flex items-end justify-between">
+                    <span className="font-display text-3xl font-extrabold text-on-surface">{stats.inactive || 0}</span>
+                    <span className="text-xs text-on-surface-variant">Historial archivado</span>
+                  </div>
+                  <div className="mt-3 h-1.5 rounded-full bg-surface-container overflow-hidden">
+                    <div className="h-full rounded-full bg-slate-500" style={{ width: `${inactivePct}%` }}></div>
+                  </div>
+                </div>
+
+                {/* Prioridad alta */}
+                <div className="rounded-xl border border-red-200 bg-red-50/60 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Prioridad alta</span>
+                    <span className="material-symbols-outlined text-primary text-lg">warning</span>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="font-display text-3xl font-extrabold text-primary">{highCount}</span>
+                    <span className="px-2 py-0.5 rounded-md bg-primary text-white text-[11px] font-bold">Críticos UTP</span>
+                  </div>
+                  <p className="mt-2 text-xs text-primary">SLA Campus &lt; 2h</p>
+                </div>
+
+                {/* Tiempo promedio */}
+                <div className="rounded-xl border border-sky-200 bg-sky-50/60 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Tiempo promedio UTP</span>
+                    <span className="material-symbols-outlined text-tertiary text-lg">timer</span>
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <span className="font-display text-3xl font-extrabold text-on-surface">1.2<span className="text-lg font-semibold text-on-surface-variant"> horas</span></span>
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold">-25% vs meta</span>
+                  </div>
+                  <p className="mt-2 text-xs text-tertiary">Resolución de incidentes · Óptimo</p>
+                </div>
               </div>
 
-              {/* Active */}
-              <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Activos / En Atención</span>
-                  <span className="p-1 rounded-lg bg-emerald-100 text-emerald-700 material-symbols-outlined text-base">radio_button_checked</span>
+              {/* Categorías (filtro rápido) */}
+              <div className="rounded-2xl bg-surface-container-lowest border border-surface-container shadow-sm p-4">
+                <div className="flex items-center gap-2 mb-3 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                  <span className="material-symbols-outlined text-primary text-base">category</span>
+                  <span>Métricas por categoría</span>
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-emerald-700 font-bold">{stats.active || 0}</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-xs font-bold">Activo</span>
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(stats.byCategory || {}).map(([cat, count]) => (
+                    <button
+                      key={cat}
+                      onClick={() => setCategoryFilter(categoryFilter === cat ? 'ALL' : cat)}
+                      className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition flex items-center gap-1.5 cursor-pointer ${
+                        categoryFilter === cat
+                          ? 'bg-primary text-white border-primary shadow-sm'
+                          : 'bg-surface-container-low hover:bg-surface-container border-surface-container text-on-surface'
+                      }`}
+                    >
+                      <span>{cat}</span>
+                      <span className={`px-1.5 rounded-full text-[10px] font-bold ${categoryFilter === cat ? 'bg-white text-primary' : 'bg-primary/10 text-primary'}`}>
+                        {count}
+                      </span>
+                    </button>
+                  ))}
                 </div>
-                <div className="mt-2 text-xs text-on-surface-variant flex items-center justify-between">
-                  <span>Requieren acción técnica</span>
-                  <span className="font-semibold text-emerald-700">
-                    {stats.total > 0 ? Math.round((stats.active / stats.total) * 100) : 0}%
+              </div>
+
+              {/* Instancia / conexión */}
+              <div className="rounded-2xl bg-surface-container-lowest border border-surface-container shadow-sm p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-lg">hub</span>
+                    <span className="text-sm font-bold text-on-surface">incident-controller</span>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${isOnline ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+                    {isOnline ? 'En línea' : 'Desconectado'}
                   </span>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500"></div>
+                <p className="mt-2 text-xs text-on-surface-variant">
+                  Instancia: <span className="font-mono">{currentHost.replace(/^https?:\/\//, '')}</span>. Cada acción ejecuta mutaciones y eventos REST.
+                </p>
               </div>
+            </aside>
 
-              {/* Inactive */}
-              <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Inactivos / Cerrados</span>
-                  <span className="p-1 rounded-lg bg-surface-container text-outline material-symbols-outlined text-base">task_alt</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-on-surface font-bold">{stats.inactive || 0}</span>
-                  <span className="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-xs font-bold">Inactivo</span>
-                </div>
-                <div className="mt-2 text-xs text-on-surface-variant flex items-center justify-between">
-                  <span>Tickets solucionados</span>
-                  <span className="font-semibold text-on-surface">
-                    {stats.total > 0 ? Math.round((stats.inactive / stats.total) * 100) : 0}%
+            {/* Columna principal */}
+            <div className="min-w-0 space-y-4">
+              {/* Barra superior: estado y documentación */}
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-xs text-on-surface-variant">
+                  <span className="flex items-center gap-1 font-semibold text-primary">
+                    <span className="material-symbols-outlined text-sm">terminal</span>
+                    Incidentes
                   </span>
+                  <span>/</span>
+                  <span className="text-on-surface font-medium">Mesa Operativa Campus</span>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-outline"></div>
-              </div>
-
-              {/* Critical / High Priority */}
-              <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Prioridad Alta</span>
-                  <span className="p-1 rounded-lg bg-red-100 text-primary material-symbols-outlined text-base">warning</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-primary font-bold">
-                    {(stats.bySeverity && (stats.bySeverity.High || stats.bySeverity.HIGH)) || incidents.filter(i => (i.priority || '').toUpperCase() === 'HIGH').length}
-                  </span>
-                  <span className="px-2 py-0.5 rounded bg-primary-container text-on-primary text-xs font-bold">Críticos</span>
-                </div>
-                <div className="mt-2 text-xs text-on-surface-variant flex items-center justify-between">
-                  <span>SLA Campus &lt; 2h</span>
-                  <span className="font-semibold text-primary">Atención UTP</span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary-container"></div>
-              </div>
-
-              {/* Campus SLA */}
-              <div className="relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-on-surface-variant font-semibold">Tiempo Promedio</span>
-                  <span className="p-1 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant material-symbols-outlined text-base">timer</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl text-on-surface font-bold">1.2<span className="text-lg font-normal">h</span></span>
-                  <span className="text-xs text-emerald-600 font-medium">-25% vs meta</span>
-                </div>
-                <div className="mt-2 text-xs text-on-surface-variant flex items-center justify-between">
-                  <span>Resolución de incidentes</span>
-                  <span className="font-semibold text-tertiary">Óptimo NOC</span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-tertiary"></div>
-              </div>
-            </div>
-
-            {/* Interactive Category Pills Bar */}
-            <div className="mt-4 p-3 rounded-xl bg-surface-container-lowest border border-surface-container flex flex-wrap items-center justify-between gap-3 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant">
-                <span className="material-symbols-outlined text-sm text-primary">category</span>
-                <span>Métricas por Categoría:</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {Object.entries(stats.byCategory || {}).map(([cat, count]) => (
+                <div className="flex items-center gap-2">
+                  <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${isOnline ? 'bg-emerald-500/10 text-emerald-700' : 'bg-red-500/10 text-red-700'}`}>
+                    <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+                    <span>{isOnline ? 'Servicio en línea' : 'Servicio desconectado'}</span>
+                  </div>
                   <button
-                    key={cat}
-                    onClick={() => setCategoryFilter(categoryFilter === cat ? 'ALL' : cat)}
-                    className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition flex items-center gap-1.5 cursor-pointer ${
-                      categoryFilter === cat
-                        ? 'bg-primary text-white border-primary shadow-sm'
-                        : 'bg-surface-container-low hover:bg-surface-container border-surface-container text-on-surface'
-                    }`}
+                    onClick={() => setShowDocsModal(true)}
+                    className="flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-primary border border-surface-container shadow-sm text-xs font-semibold"
                   >
-                    <span>{cat}</span>
-                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${categoryFilter === cat ? 'bg-white text-primary' : 'bg-primary/10 text-primary'}`}>
-                      {count}
-                    </span>
+                    <span className="material-symbols-outlined text-sm">code</span>
+                    <span>Documentación</span>
                   </button>
-                ))}
+                </div>
               </div>
-            </div>
-          </section>
 
-          {/* Controls & Filters Bar */}
-          <section className="w-full mb-4">
-            <div className="rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-              <div className="flex-1 flex flex-col sm:flex-row items-center gap-3">
-                {/* Search */}
-                <div className="relative w-full sm:max-w-xs">
-                  <span className="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-lg">search</span>
+              {/* Barra de búsqueda y filtros */}
+              <div className="rounded-2xl bg-surface-container-lowest border border-surface-container shadow-sm p-3 flex flex-col gap-3">
+                <div className="relative w-full">
+                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
                   <input
                     type="text"
-                    placeholder="Buscar por ID, título, aula..."
+                    placeholder="Buscar por ticket (INC-1045), título, motivo de rechazo o sede..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-9 pr-8 py-2 rounded-lg bg-surface-container-low text-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 border border-surface-container"
@@ -1038,91 +1089,77 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Status Toggle */}
-                <div className="w-full sm:w-auto flex items-center bg-surface-container-low rounded-lg p-1 border border-surface-container">
-                  {['ALL', 'Active', 'Inactive'].map((s) => (
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-semibold text-on-surface-variant">Prioridad:</span>
+                  <select
+                    value={priorityFilter}
+                    onChange={(e) => setPriorityFilter(e.target.value)}
+                    className="bg-surface-container-low text-xs text-on-surface px-3 py-2 rounded-lg focus:outline-none cursor-pointer border border-surface-container"
+                  >
+                    <option value="ALL">Todas las prioridades</option>
+                    <option value="High">Alta</option>
+                    <option value="Medium">Media</option>
+                    <option value="Low">Baja</option>
+                  </select>
+                  <select
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                    className="bg-surface-container-low text-xs text-on-surface px-3 py-2 rounded-lg focus:outline-none cursor-pointer border border-surface-container"
+                  >
+                    <option value="ALL">Todas las categorías</option>
+                    <option value="Redes">Redes</option>
+                    <option value="Hardware">Hardware</option>
+                    <option value="Software">Software</option>
+                    <option value="Seguridad">Seguridad</option>
+                    <option value="Infraestructura">Infraestructura</option>
+                    <option value="General">General</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 justify-end">
+                  <div className="flex items-center bg-surface-container-low rounded-lg p-1 border border-surface-container">
+                    {['ALL', 'Active', 'Inactive'].map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setStatusFilter(s)}
+                        className={`px-3 py-1.5 rounded-md text-xs transition ${
+                          statusFilter === s
+                            ? 'font-semibold bg-surface-container-lowest text-on-surface shadow-sm'
+                            : 'font-medium text-on-surface-variant hover:text-on-surface'
+                        }`}
+                      >
+                        {s === 'ALL' ? 'Todos' : s === 'Active' ? 'Activos' : 'Inactivos'}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center bg-surface-container-low rounded-lg p-1 border border-surface-container">
                     <button
-                      key={s}
-                      onClick={() => setStatusFilter(s)}
-                      className={`px-3 py-1.5 rounded-md text-xs transition ${
-                        statusFilter === s
-                          ? 'font-semibold bg-surface-container-lowest text-on-surface shadow-sm'
-                          : 'font-medium text-on-surface-variant hover:text-on-surface'
-                      }`}
+                      onClick={() => setView('cards')}
+                      title="Vista Tarjetas"
+                      className={`p-1.5 rounded-md transition ${view === 'cards' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
                     >
-                      {s === 'ALL' ? 'Todos' : s === 'Active' ? 'Activos' : 'Inactivos'}
+                      <span className="material-symbols-outlined text-base">grid_view</span>
                     </button>
-                  ))}
-                </div>
-
-                {/* Category Filter */}
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full sm:w-auto bg-surface-container-low text-xs text-on-surface px-3 py-2 rounded-lg focus:outline-none cursor-pointer border border-surface-container"
-                >
-                  <option value="ALL">Todas las Categorías</option>
-                  <option value="Redes">Redes</option>
-                  <option value="Hardware">Hardware</option>
-                  <option value="Software">Software</option>
-                  <option value="Seguridad">Seguridad</option>
-                  <option value="Infraestructura">Infraestructura</option>
-                  <option value="General">General</option>
-                </select>
-
-                {/* Priority Filter */}
-                <select
-                  value={priorityFilter}
-                  onChange={(e) => setPriorityFilter(e.target.value)}
-                  className="w-full sm:w-auto bg-surface-container-low text-xs text-on-surface px-3 py-2 rounded-lg focus:outline-none cursor-pointer border border-surface-container"
-                >
-                  <option value="ALL">Todas las Prioridades</option>
-                  <option value="High">Alta</option>
-                  <option value="Medium">Media</option>
-                  <option value="Low">Baja</option>
-                </select>
-              </div>
-
-              {/* View Toggles & Add Button */}
-              <div className="flex items-center gap-2 justify-end">
-                <div className="flex items-center bg-surface-container-low rounded-lg p-1 border border-surface-container">
+                    <button
+                      onClick={() => setView('table')}
+                      title="Vista Tabla"
+                      className={`p-1.5 rounded-md transition ${view === 'table' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
+                    >
+                      <span className="material-symbols-outlined text-base">format_list_bulleted</span>
+                    </button>
+                  </div>
                   <button
-                    onClick={() => setView('cards')}
-                    title="Vista Tarjetas"
-                    className={`p-1.5 rounded-md transition ${view === 'cards' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
+                    type="button"
+                    onClick={loadData}
+                    title="Sincronizar"
+                    className="p-2 rounded-lg border border-surface-container bg-surface-container-lowest text-on-surface-variant hover:text-primary transition"
                   >
-                    <span className="material-symbols-outlined text-base">grid_view</span>
-                  </button>
-                  <button
-                    onClick={() => setView('table')}
-                    title="Vista Tabla"
-                    className={`p-1.5 rounded-md transition ${view === 'table' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
-                  >
-                    <span className="material-symbols-outlined text-base">format_list_bulleted</span>
+                    <span className="material-symbols-outlined text-lg">sync</span>
                   </button>
                 </div>
-
-                {canCreateIncident ? (
-                  <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-white font-semibold text-sm transition shadow-sm"
-                  >
-                    <span className="material-symbols-outlined text-lg">add_circle</span>
-                    <span>Nuevo Incidente</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setShowLoginModal(true)}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-white font-semibold text-sm transition shadow-sm"
-                    title="Inicia sesión para registrar incidentes"
-                  >
-                    <span className="material-symbols-outlined text-lg">login</span>
-                    <span>Iniciar sesión</span>
-                  </button>
-                )}
+                </div>
               </div>
-            </div>
-          </section>
 
           {/* Main Incident Display */}
           <section className="w-full">
@@ -1139,86 +1176,97 @@ export default function App() {
                 </button>
               </div>
             ) : view === 'cards' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {filteredIncidents.map((item) => {
-                  const isActive = item.status === 'Active';
-                  const catClass = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.General;
-
-                  return (
-                    <div key={item.id} className="relative flex flex-col justify-between rounded-xl bg-surface-container-lowest p-4 shadow-sm hover:shadow-md transition border border-surface-container">
-                      <div>
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <div>
-                            <span className="font-mono text-xs font-bold text-primary">{item.ticketCode}</span>
-                            <h3
-                              onClick={() => handleOpenDetailModal(item)}
-                              className="font-headline-sm text-sm text-on-surface font-bold hover:text-primary transition cursor-pointer mt-0.5 line-clamp-1"
-                            >
-                              {item.title}
-                            </h3>
-                          </div>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-container text-on-surface-variant'}`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-600' : 'bg-outline'}`}></span>
-                              {statusLabel(item.status)}
-                            </span>
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold text-white ${item.priority === 'High' ? 'bg-primary' : item.priority === 'Medium' ? 'bg-amber-500' : 'bg-sky-600'}`}>
-                              {priorityLabel(item.priority)}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="mt-2 text-xs text-on-surface line-clamp-2">
-                          <span className="font-semibold text-on-surface-variant">Descripción:</span> {item.description}
-                        </div>
-
-                        {item.rejectionReason && (
-                          <div className="mt-2.5 p-2 rounded-lg bg-surface-container-low text-xs flex items-start gap-1.5 border border-surface-container">
-                            <span className="font-semibold text-on-surface-variant shrink-0">Observaciones:</span>
-                            <span className="text-on-surface break-words">{item.rejectionReason}</span>
-                          </div>
-                        )}
-
-                        <div className="mt-3 flex items-center justify-between text-[11px] text-outline font-mono pt-2 border-t border-surface-container">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border ${catClass}`}>
-                            {item.category}
-                          </span>
-                          <span className="text-on-surface-variant truncate max-w-[130px]" title={item.location}>
-                            {item.location || 'Campus UTP'}
-                          </span>
-                        </div>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
+                {kanbanColumns.map((column) => (
+                  <div key={column.key} className="flex flex-col gap-3 rounded-xl bg-surface-container-low border border-surface-container p-3">
+                    <div className="flex items-center justify-between px-1 pb-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2.5 h-2.5 rounded-full ${column.dot}`}></span>
+                        <h2 className="text-xs font-bold uppercase tracking-wider text-on-surface">{column.title}</h2>
+                        <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${column.badge}`}>{column.items.length}</span>
                       </div>
-
-                      <div className="mt-3 pt-2 border-t border-surface-container flex items-center justify-between gap-1">
-                        <button
-                          onClick={() => handleOpenDetailModal(item)}
-                          className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 text-xs font-semibold transition"
-                        >
-                          <span className="material-symbols-outlined text-base">visibility</span>
-                          <span>Detalle</span>
-                        </button>
-                        {canEditIncident && (
-                          <button
-                            onClick={() => handleOpenPatchModal(item)}
-                            className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 text-xs font-semibold transition"
-                          >
-                            <span className="material-symbols-outlined text-base">edit</span>
-                            <span>Editar</span>
-                          </button>
-                        )}
-                        {canDeleteIncident && (
-                          <button
-                            onClick={() => handleDelete(item.id, item.ticketCode, item.title)}
-                            className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary/10 text-xs font-semibold transition"
-                          >
-                            <span className="material-symbols-outlined text-base">delete</span>
-                            <span>Eliminar</span>
-                          </button>
-                        )}
-                      </div>
+                      <span className="font-mono text-[10px] text-outline">{column.hint}</span>
                     </div>
-                  );
-                })}
+                    {column.items.length === 0 && (
+                      <div className="py-8 text-center text-xs text-on-surface-variant rounded-lg border border-dashed border-surface-container bg-surface-container-lowest">
+                        Sin incidentes en esta columna
+                      </div>
+                    )}
+                    {column.items.map((item) => {
+                      const catClass = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.General;
+                      const accent = item.priority === 'High' ? 'border-l-primary' : item.priority === 'Medium' ? 'border-l-amber-500' : 'border-l-sky-600';
+                      const pillClass = item.priority === 'High' ? 'bg-primary' : item.priority === 'Medium' ? 'bg-amber-500' : 'bg-sky-600';
+
+                      return (
+                        <div key={item.id} className={`rounded-xl bg-surface-container-lowest p-4 shadow-sm hover:shadow-md transition border border-surface-container border-l-4 ${accent}`}>
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="font-mono text-xs font-bold text-primary">{item.ticketCode}</span>
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border ${catClass}`}>{item.category}</span>
+                            </div>
+                            <span className={`shrink-0 px-2 py-0.5 rounded-md text-[10px] font-extrabold tracking-wide text-white ${pillClass}`}>
+                              {String(item.priority || '').toUpperCase()}
+                            </span>
+                          </div>
+
+                          <h3
+                            onClick={() => handleOpenDetailModal(item)}
+                            className="mt-1.5 text-sm font-bold text-on-surface hover:text-primary transition cursor-pointer line-clamp-2"
+                          >
+                            {item.title}
+                          </h3>
+                          <p className="mt-1 text-xs text-on-surface-variant line-clamp-2">{item.description}</p>
+
+                          {item.rejectionReason && (
+                            <div className="mt-3 p-2.5 rounded-lg bg-surface-container-low border border-surface-container text-xs">
+                              <span className="font-semibold text-on-surface-variant">Resolución/Rechazo: </span>
+                              <span className="text-on-surface break-words">{item.rejectionReason}</span>
+                            </div>
+                          )}
+
+                          <div className="mt-3 flex items-center justify-between gap-2 text-[11px] text-on-surface-variant">
+                            <span className="inline-flex items-center gap-1 min-w-0">
+                              <span className="material-symbols-outlined text-sm shrink-0">location_on</span>
+                              <span className="truncate" title={item.location}>{item.location || 'Campus UTP'}</span>
+                            </span>
+                            <span className="inline-flex items-center gap-1 shrink-0 font-mono">
+                              <span className="material-symbols-outlined text-sm">schedule</span>
+                              {shortDate(item.createdAt)}
+                            </span>
+                          </div>
+
+                          <div className="mt-3 pt-3 border-t border-surface-container flex items-center justify-between gap-1">
+                            <button
+                              onClick={() => handleOpenDetailModal(item)}
+                              className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-tertiary hover:bg-tertiary/10 text-xs font-semibold transition text-center"
+                            >
+                              <span className="material-symbols-outlined text-base">visibility</span>
+                              <span>Detalle</span>
+                            </button>
+                            {canEditIncident && (
+                              <button
+                                onClick={() => handleOpenPatchModal(item)}
+                                className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-amber-600 hover:bg-amber-500/10 text-xs font-semibold transition text-center"
+                              >
+                                <span className="material-symbols-outlined text-base">edit</span>
+                                <span>Editar Estado</span>
+                              </button>
+                            )}
+                            {canDeleteIncident && (
+                              <button
+                                onClick={() => handleDelete(item.id, item.ticketCode, item.title)}
+                                className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-primary hover:bg-primary/10 text-xs font-semibold transition text-center"
+                              >
+                                <span className="material-symbols-outlined text-base">delete</span>
+                                <span>Eliminar</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="overflow-x-auto rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container">
@@ -1287,6 +1335,8 @@ export default function App() {
               </div>
             )}
           </section>
+            </div>
+          </div>
           </div>
 
           {activeView === 'users' && (
@@ -1350,7 +1400,7 @@ export default function App() {
                   <div className="rounded-xl bg-surface-container-lowest p-4 shadow-sm border border-surface-container mb-4 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
                     <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
                       <div className="relative w-full sm:max-w-xs">
-                        <span className="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-lg">search</span>
+                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
                         <input
                           type="text"
                           placeholder="Buscar por usuario, nombre o correo..."
