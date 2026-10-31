@@ -990,31 +990,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Interactive Category Pills Bar */}
-            <div className="mt-4 p-3 rounded-xl bg-surface-container-lowest border border-surface-container flex flex-wrap items-center justify-between gap-3 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant">
-                <span className="material-symbols-outlined text-sm text-primary">category</span>
-                <span>Métricas por Categoría:</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {Object.entries(stats.byCategory || {}).map(([cat, count]) => (
-                  <button
-                    key={cat}
-                    onClick={() => setCategoryFilter(categoryFilter === cat ? 'ALL' : cat)}
-                    className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition flex items-center gap-1.5 cursor-pointer ${
-                      categoryFilter === cat
-                        ? 'bg-primary text-white border-primary shadow-sm'
-                        : 'bg-surface-container-low hover:bg-surface-container border-surface-container text-on-surface'
-                    }`}
-                  >
-                    <span>{cat}</span>
-                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${categoryFilter === cat ? 'bg-white text-primary' : 'bg-primary/10 text-primary'}`}>
-                      {count}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
           </section>
 
           {/* Controls & Filters Bar */}
@@ -1054,21 +1029,6 @@ export default function App() {
                     </button>
                   ))}
                 </div>
-
-                {/* Category Filter */}
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full sm:w-auto bg-surface-container-low text-xs text-on-surface px-3 py-2 rounded-lg focus:outline-none cursor-pointer border border-surface-container"
-                >
-                  <option value="ALL">Todas las Categorías</option>
-                  <option value="Redes">Redes</option>
-                  <option value="Hardware">Hardware</option>
-                  <option value="Software">Software</option>
-                  <option value="Seguridad">Seguridad</option>
-                  <option value="Infraestructura">Infraestructura</option>
-                  <option value="General">General</option>
-                </select>
 
                 {/* Priority Filter */}
                 <select
