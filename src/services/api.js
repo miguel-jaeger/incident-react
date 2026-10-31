@@ -80,7 +80,7 @@ export function getInitialApiUrl() {
   const stored = readStorage("utp_api_url");
   if (stored) return stored;
   if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
-    return DEFAULT_LOCAL_URL;
+    return DEFAULT_RENDER_URL;
   }
   return DEFAULT_RENDER_URL;
 }
