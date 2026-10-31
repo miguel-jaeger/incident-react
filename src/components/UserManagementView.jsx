@@ -8,12 +8,14 @@ import {
   USER_ROLES
 } from '../services/api';
 
-export default function UserManagementView({ onToast }) {
+export default function UserManagementView({ onToast, currentUser = null, onOpenLogin }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
+
+  const isAdmin = currentUser?.role === 'ADMIN';
 
   // Modal: Registrar Usuario
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -47,8 +49,40 @@ export default function UserManagementView({ onToast }) {
   }, []);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    if (isAdmin) {
+      fetchUsers();
+    } else {
+      setLoading(false);
+    }
+  }, [isAdmin, fetchUsers]);
+
+  if (!isAdmin) {
+    return (
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center space-y-4 animate-in fade-in duration-200">
+        <div className="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto">
+          <span className="material-symbols-outlined text-3xl">admin_panel_settings</span>
+        </div>
+        <div>
+          <h3 className="font-headline-sm text-lg font-bold text-slate-900">
+            Acceso Restringido a Administradores TI
+          </h3>
+          <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+            La gestión de cuentas, asignación de roles y contraseñas requiere privilegios de <strong>ADMIN</strong> según las políticas de seguridad del backend.
+          </p>
+        </div>
+        <div className="pt-2">
+          <button
+            type="button"
+            onClick={() => onOpenLogin && onOpenLogin('Inicia sesión con la cuenta de Administrador para gestionar usuarios.')}
+            className="px-5 py-2.5 rounded-xl bg-[#C8102E] hover:bg-[#a60b24] text-white text-xs font-bold font-headline-sm transition cursor-pointer shadow-sm inline-flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-base">login</span>
+            <span>Iniciar Sesión como Administrador (ADMIN)</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Cambiar rol de usuario en vivo
   const handleRoleChange = async (userId, targetRole) => {

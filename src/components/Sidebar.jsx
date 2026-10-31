@@ -10,8 +10,17 @@ export default function Sidebar({
   onCloseMobile,
   onToggleCollapse,
   user = null,
+  onOpenLogin,
+  onLogout,
   stats = { total: 0, active: 0, high: 0 }
 }) {
+  const roleBadgeColors = {
+    ADMIN: 'bg-red-600 text-white',
+    SUPERVISOR: 'bg-amber-500 text-white',
+    OPERATOR: 'bg-sky-600 text-white',
+    SUPPORT: 'bg-purple-600 text-white'
+  };
+
   const navItems = [
     {
       id: 'incidents',
@@ -34,8 +43,8 @@ export default function Sidebar({
       label: 'Gestión de Usuarios',
       shortLabel: 'Usuarios',
       icon: 'manage_accounts',
-      badge: 'ADMIN',
-      badgeColor: 'bg-red-600 text-white font-mono text-[9px]'
+      badge: user?.role === 'ADMIN' ? 'ADMIN' : 'Solo ADMIN',
+      badgeColor: user?.role === 'ADMIN' ? 'bg-red-600 text-white font-mono text-[9px]' : 'bg-slate-200 text-slate-600 font-mono text-[9px]'
     },
     {
       id: 'docs',
@@ -105,7 +114,7 @@ export default function Sidebar({
             <button
               type="button"
               onClick={onCloseMobile}
-              className="lg:hidden p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
+              className="lg:hidden p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 cursor-pointer"
               title="Cerrar barra lateral"
             >
               <span className="material-symbols-outlined text-lg">close</span>
@@ -169,25 +178,68 @@ export default function Sidebar({
 
         {/* Bottom Section: User status & collapse toggle */}
         <div className="border-t border-slate-100 p-3 space-y-2">
-          {/* Quick User Capsule */}
-          <div className={`flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-200/70 ${!isOpen ? 'justify-center' : ''}`}>
-            <div className="relative shrink-0">
-              <span className="material-symbols-outlined text-slate-600 text-2xl">
-                account_circle
-              </span>
-              <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white"></span>
-            </div>
-            {isOpen && (
-              <div className="flex flex-col text-left leading-tight truncate">
-                <span className="text-xs font-semibold text-slate-800 truncate">
-                  {user?.name || "Admin TI UTP"}
-                </span>
-                <span className="text-[10px] text-slate-400 font-mono truncate">
-                  {user?.role ? `Rol: ${user.role}` : "Supervisión NOC"}
-                </span>
+          {user ? (
+            <div className={`p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-2 ${!isOpen ? 'items-center' : ''}`}>
+              <div className="flex items-center gap-2.5 w-full overflow-hidden">
+                <div className="relative shrink-0">
+                  <span className="material-symbols-outlined text-slate-600 text-2xl">
+                    account_circle
+                  </span>
+                  <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+                </div>
+                {isOpen && (
+                  <div className="flex flex-col text-left leading-tight truncate flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-xs font-semibold text-slate-800 truncate">
+                        {user.name || user.username}
+                      </span>
+                      <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono font-bold shrink-0 ${roleBadgeColors[user.role] || 'bg-slate-700 text-white'}`}>
+                        {user.role}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono truncate">
+                      @{user.username}
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+
+              {isOpen && (
+                <div className="flex items-center gap-1.5 pt-1 border-t border-slate-200/50">
+                  <button
+                    type="button"
+                    onClick={onOpenLogin}
+                    className="flex-1 py-1 px-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-[11px] text-slate-700 font-semibold transition cursor-pointer flex items-center justify-center gap-1"
+                    title="Cambiar de usuario o rol"
+                  >
+                    <span className="material-symbols-outlined text-sm">switch_account</span>
+                    <span>Cambiar</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onLogout}
+                    className="py-1 px-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1"
+                    title="Cerrar sesión"
+                  >
+                    <span className="material-symbols-outlined text-sm">logout</span>
+                    <span>Salir</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={onOpenLogin}
+              className={`w-full py-2.5 px-3 rounded-xl bg-[#C8102E] hover:bg-[#a60b24] text-white font-headline-sm text-xs font-bold shadow transition cursor-pointer flex items-center justify-center gap-2 ${
+                !isOpen ? 'p-2' : ''
+              }`}
+              title="Iniciar Sesión"
+            >
+              <span className="material-symbols-outlined text-lg">login</span>
+              {isOpen && <span>Iniciar Sesión</span>}
+            </button>
+          )}
 
           {/* Collapse/Expand Toggle on Desktop */}
           <button
@@ -206,4 +258,3 @@ export default function Sidebar({
     </>
   );
 }
-

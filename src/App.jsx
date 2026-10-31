@@ -16,6 +16,7 @@ import StatusModal from './components/StatusModal';
 import DetailModal from './components/DetailModal';
 import ApiDocsModal from './components/ApiDocsModal';
 import HostSettingsModal from './components/HostSettingsModal';
+import LoginModal from './components/LoginModal';
 import Toast from './components/Toast';
 
 import {
@@ -140,18 +141,20 @@ export default function App() {
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isHostOpen, setIsHostOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [loginInitialMessage, setLoginInitialMessage] = useState('');
 
   // Selección activa para modales
   const [selectedIncident, setSelectedIncident] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Usuario & Sesión
+  // Usuario & Sesión (Si no hay sesión almacenada, arranca en null para poder elegir o cerrar sesión realmente)
   const [user, setUser] = useState(() => {
     try {
       const stored = localStorage.getItem('utp_auth_user');
-      return stored ? JSON.parse(stored) : { username: 'admin', name: 'Admin TI UTP', role: 'ADMIN' };
+      return stored ? JSON.parse(stored) : null;
     } catch {
-      return { username: 'admin', name: 'Admin TI UTP', role: 'ADMIN' };
+      return null;
     }
   });
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -209,43 +212,39 @@ export default function App() {
     }
   }, [currentHost, showToast]);
 
-  // Autenticación inicial automática
+  // Validación de token al cargar (SIN auto-login forzado)
   useEffect(() => {
-    const initAuth = async () => {
+    const checkCurrentSession = async () => {
       const token = getAuthToken();
       if (!token) {
-        try {
-          const authData = await loginUser('admin', 'admin123');
-          if (authData && authData.authenticated) {
-            const userData = {
-              username: authData.username || 'admin',
-              name: authData.name || 'Admin TI UTP',
-              role: authData.role || 'ADMIN'
-            };
-            setUser(userData);
-            localStorage.setItem('utp_auth_user', JSON.stringify(userData));
-          }
-        } catch {
-          // Ignorar fallo de arranque en frío
+        // No hay sesión activa; no hacemos login automático para permitir elegir o cerrar sesión
+        setUser(null);
+        localStorage.removeItem('utp_auth_user');
+        return;
+      }
+
+      try {
+        const me = await getCurrentUser();
+        if (me && me.authenticated !== false) {
+          const userData = {
+            username: me.username,
+            name: me.name || me.username,
+            role: me.role || 'OPERATOR'
+          };
+          setUser(userData);
+          localStorage.setItem('utp_auth_user', JSON.stringify(userData));
+        } else {
+          setUser(null);
+          localStorage.removeItem('utp_auth_user');
         }
-      } else {
-        try {
-          const me = await getCurrentUser();
-          if (me && me.authenticated !== false) {
-            setUser(prev => ({
-              ...prev,
-              username: me.username || prev.username,
-              name: me.name || prev.name,
-              role: me.role || prev.role
-            }));
-          }
-        } catch {
-          // Ignorar
-        }
+      } catch {
+        // Token inválido o expirado
+        setUser(null);
+        localStorage.removeItem('utp_auth_user');
       }
     };
 
-    initAuth();
+    checkCurrentSession();
     loadData();
   }, [loadData]);
 
@@ -285,7 +284,22 @@ export default function App() {
   const inactiveCount = incidents.filter(i => i.status === 'Inactive').length;
   const highCount = incidents.filter(i => i.priority === 'High').length;
 
-  // Manejador: Crear nuevo incidente
+  // Abrir login con aviso
+  const openLoginWithNotice = (msg = '') => {
+    setLoginInitialMessage(msg);
+    setLoginError('');
+    setIsLoginOpen(true);
+  };
+
+  // Manejador: Crear nuevo incidente con validación de rol
+  const handleOpenCreate = () => {
+    if (!user) {
+      openLoginWithNotice("Debes iniciar sesión con cualquier rol (ADMIN, SUPERVISOR, OPERATOR o SUPPORT) para registrar un incidente.");
+      return;
+    }
+    setIsCreateOpen(true);
+  };
+
   const handleCreateSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
@@ -317,14 +331,27 @@ export default function App() {
       setIncidents(prev => [newTicket, ...prev]);
       setIsCreateOpen(false);
       showToast("POST /api/incidents Exitoso", `Ticket #${newTicket.ticketCode} creado con ID: ${newId} (HTTP 201).`, true);
-    } catch {
-      showToast("Error al crear incidente", "No se pudo comunicar con el servidor.", false);
+    } catch (err) {
+      showToast("Error al crear incidente", err.message || "No se pudo comunicar con el servidor.", false);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Manejador: Actualizar estado
+  // Manejador: Actualizar estado (Solo ADMIN)
+  const handleOpenPatch = (item) => {
+    if (!user) {
+      openLoginWithNotice("Inicia sesión como ADMIN para actualizar el estado del incidente.");
+      return;
+    }
+    if (user.role !== 'ADMIN') {
+      showToast("Permiso Denegado", `Tu rol actual (${user.role}) no tiene permisos para cambiar estados. Se requiere rol ADMIN.`, false);
+      return;
+    }
+    setSelectedIncident(item);
+    setIsStatusOpen(true);
+  };
+
   const handlePatchSubmit = async (id, targetStatus, reason) => {
     setIsSubmitting(true);
     try {
@@ -343,15 +370,24 @@ export default function App() {
 
       setIsStatusOpen(false);
       showToast("Estado Actualizado", `PATCH /api/incidents/${id}/status completado (HTTP 200).`, true);
-    } catch {
-      showToast("Error al actualizar estado", "No se pudo actualizar en el servidor.", false);
+    } catch (err) {
+      showToast("Error al actualizar estado", err.message || "No se pudo actualizar en el servidor.", false);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Manejador: Eliminar incidente
+  // Manejador: Eliminar incidente (Solo ADMIN)
   const handleDelete = async (item) => {
+    if (!user) {
+      openLoginWithNotice("Inicia sesión como ADMIN para eliminar un incidente.");
+      return;
+    }
+    if (user.role !== 'ADMIN') {
+      showToast("Permiso Denegado", `Tu rol actual (${user.role}) no tiene permisos para eliminar registros. Se requiere rol ADMIN.`, false);
+      return;
+    }
+
     const confirmed = window.confirm(
       `¿Confirmar eliminación del incidente #${item.ticketCode} (${item.title})?\n\nEndpoint: DELETE /api/incidents/${item.id}`
     );
@@ -361,12 +397,12 @@ export default function App() {
       await deleteIncident(item.id).catch(() => null);
       setIncidents(prev => prev.filter(i => i.id !== item.id));
       showToast("Incidente Eliminado", `DELETE /api/incidents/${item.id} ejecutado correctamente (HTTP 204).`, false);
-    } catch {
-      showToast("Error al eliminar", `No se pudo eliminar el incidente ${item.id}.`, false);
+    } catch (err) {
+      showToast("Error al eliminar", err.message || `No se pudo eliminar el incidente ${item.id}.`, false);
     }
   };
 
-  // Manejador: Ver detalle
+  // Manejador: Ver detalle (Accesible para todos)
   const handleViewDetail = async (item) => {
     setSelectedIncident(item);
     setIsDetailOpen(true);
@@ -388,11 +424,6 @@ export default function App() {
     }
   };
 
-  const handleOpenPatch = (item) => {
-    setSelectedIncident(item);
-    setIsStatusOpen(true);
-  };
-
   const handleResetFilters = () => {
     setSearchQuery('');
     setStatusFilter('ALL');
@@ -407,6 +438,7 @@ export default function App() {
     loadData(true);
   };
 
+  // Login por roles
   const handleLogin = async (username, password) => {
     setIsLoggingIn(true);
     setLoginError('');
@@ -415,12 +447,13 @@ export default function App() {
       const newUser = {
         username: data.username,
         name: data.name || data.username,
-        role: data.role || 'ADMIN'
+        role: data.role || 'OPERATOR'
       };
       setUser(newUser);
       localStorage.setItem('utp_auth_user', JSON.stringify(newUser));
-      showToast("Sesión Iniciada", `Bienvenido ${newUser.name} (${newUser.role})`, true);
+      setIsLoginOpen(false);
       setIsHostOpen(false);
+      showToast("Sesión Iniciada", `Bienvenido, ${newUser.name} (Rol: ${newUser.role})`, true);
     } catch (err) {
       setLoginError(err.message || 'Credenciales incorrectas');
     } finally {
@@ -428,13 +461,14 @@ export default function App() {
     }
   };
 
+  // Cierre de sesión real y definitivo
   const handleLogout = async () => {
     try {
       await logoutUser().catch(() => null);
     } finally {
       localStorage.removeItem('utp_auth_user');
       setUser(null);
-      showToast("Sesión Cerrada", "Has salido del sistema.", false);
+      showToast("Sesión Cerrada", "Has cerrado sesión correctamente del sistema.", false);
     }
   };
 
@@ -457,14 +491,16 @@ export default function App() {
         onCloseMobile={() => setMobileSidebarOpen(false)}
         onToggleCollapse={() => setSidebarOpen(!sidebarOpen)}
         user={user}
+        onOpenLogin={() => openLoginWithNotice()}
+        onLogout={handleLogout}
         stats={{ total: totalCount, active: activeCount, high: highCount }}
       />
 
-      {/* Área de Contenido Principal (con compensación de margen lateral) */}
+      {/* Área de Contenido Principal */}
       <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
         sidebarOpen ? 'lg:pl-64' : 'lg:pl-20'
       }`}>
-        {/* Cabecera institucional UTP con botón hamburguesa */}
+        {/* Cabecera institucional UTP */}
         <Header
           onToggleSidebar={() => {
             if (typeof window !== 'undefined' && window.innerWidth < 1024) {
@@ -475,6 +511,8 @@ export default function App() {
           }}
           onOpenDocs={() => setIsDocsOpen(true)}
           onOpenProfile={() => setIsHostOpen(true)}
+          onOpenLogin={() => openLoginWithNotice()}
+          onLogout={handleLogout}
           isOnline={isOnline}
           apiStatus={apiStatus}
           user={user}
@@ -512,7 +550,7 @@ export default function App() {
                   onPriorityFilterChange={setPriorityFilter}
                   viewMode={viewMode}
                   onViewModeChange={setViewMode}
-                  onOpenCreate={() => setIsCreateOpen(true)}
+                  onOpenCreate={handleOpenCreate}
                 />
 
                 {filteredIncidents.length === 0 ? (
@@ -542,7 +580,11 @@ export default function App() {
           )}
 
           {navView === 'users' && (
-            <UserManagementView onToast={showToast} />
+            <UserManagementView
+              onToast={showToast}
+              currentUser={user}
+              onOpenLogin={(msg) => openLoginWithNotice(msg)}
+            />
           )}
 
           {navView === 'metrics' && (
@@ -563,7 +605,17 @@ export default function App() {
         onClose={() => setToast(prev => ({ ...prev, visible: false }))}
       />
 
-      {/* Modales */}
+      {/* Modal: Iniciar Sesión por Roles (ADMIN, SUPERVISOR, OPERATOR, SUPPORT) */}
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onLogin={handleLogin}
+        isLoggingIn={isLoggingIn}
+        error={loginError}
+        initialMessage={loginInitialMessage}
+      />
+
+      {/* Modales Operativos */}
       <CreateModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}

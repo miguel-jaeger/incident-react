@@ -6,12 +6,21 @@ const AVATAR_URL = "https://lh3.googleusercontent.com/aida-public/AB6AXuA7ri6QyB
 export default function Header({ 
   onToggleSidebar,
   onOpenDocs, 
-  onOpenProfile, 
+  onOpenProfile,
+  onOpenLogin,
+  onLogout,
   isOnline = true, 
   apiStatus = 'online',
   user = null,
   notificationsCount = 1
 }) {
+  const roleBadgeColors = {
+    ADMIN: 'bg-red-600 text-white',
+    SUPERVISOR: 'bg-amber-500 text-white',
+    OPERATOR: 'bg-sky-600 text-white',
+    SUPPORT: 'bg-purple-600 text-white'
+  };
+
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
       <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
@@ -95,7 +104,7 @@ export default function Header({
           <button 
             type="button"
             onClick={onOpenDocs}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition border border-slate-200" 
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition border border-slate-200 cursor-pointer" 
             id="btnOpenDocs" 
             title="Documentación de la API"
           >
@@ -105,43 +114,66 @@ export default function Header({
 
           {/* Notifications button */}
           <button 
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 relative transition" 
-            title="Notificaciones activas" 
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 relative transition cursor-pointer" 
+            title="Configuración & Telemetría" 
             type="button"
             onClick={onOpenProfile}
           >
-            <span className="material-symbols-outlined text-xl">notifications</span>
-            {notificationsCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full ring-2 ring-white"></span>
-            )}
+            <span className="material-symbols-outlined text-xl">tune</span>
           </button>
 
           <div className="h-6 w-px bg-slate-200"></div>
 
-          {/* User profile capsule */}
-          <button 
-            type="button"
-            onClick={onOpenProfile}
-            className="flex items-center gap-2.5 pl-1 text-left rounded-lg p-1 hover:bg-slate-50 transition"
-            title="Configuración de Servidor y Perfil de Usuario"
-          >
-            <img 
-              alt="Avatar Administrador" 
-              className="w-8 h-8 rounded-lg object-cover ring-1 ring-slate-200 shrink-0" 
-              src={AVATAR_URL}
-            />
-            <div className="hidden md:flex flex-col text-left leading-tight">
-              <span className="text-xs font-semibold text-slate-800">
-                {user?.name || "Admin TI UTP"}
-              </span>
-              <span className="text-[10px] text-slate-400 font-mono">
-                {user?.role ? `Rol: ${user.role}` : "Supervisión NOC"}
-              </span>
+          {/* User profile capsule OR Iniciar Sesión */}
+          {user ? (
+            <div className="flex items-center gap-2 pl-1">
+              <button 
+                type="button"
+                onClick={onOpenProfile}
+                className="flex items-center gap-2 text-left rounded-lg p-1 hover:bg-slate-50 transition cursor-pointer"
+                title="Ver sesión y cambiar servidor"
+              >
+                <img 
+                  alt="Avatar Usuario" 
+                  className="w-8 h-8 rounded-lg object-cover ring-1 ring-slate-200 shrink-0" 
+                  src={AVATAR_URL}
+                />
+                <div className="hidden md:flex flex-col text-left leading-tight">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-semibold text-slate-800">
+                      {user.name || user.username}
+                    </span>
+                    <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono font-bold ${roleBadgeColors[user.role] || 'bg-slate-700 text-white'}`}>
+                      {user.role}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    @{user.username}
+                  </span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={onLogout}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-red-700 hover:bg-red-50 transition cursor-pointer"
+                title="Cerrar sesión"
+              >
+                <span className="material-symbols-outlined text-lg">logout</span>
+              </button>
             </div>
-          </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onOpenLogin}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#C8102E] hover:bg-[#a60b24] text-white text-xs font-bold font-headline-sm transition shadow-sm cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-base">login</span>
+              <span>Iniciar Sesión</span>
+            </button>
+          )}
         </div>
       </div>
     </header>
   );
 }
-
